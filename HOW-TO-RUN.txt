@@ -1,0 +1,12 @@
+1. Copy your game images into THIS folder (next to index.html). See MISSING-IMAGES.txt.
+2. Open a terminal in this folder and run:
+       python server.py
+   (on Windows you can also try:  py server.py)
+3. Open http://localhost:8000 in your browser.
+4. Press Ctrl+C in the terminal to stop.
+
+Accounts and progress are stored in qurridor.db (created automatically). Back it up; don't delete it.
+
+
+width > 250px == 15%
+high > 250px == 27%

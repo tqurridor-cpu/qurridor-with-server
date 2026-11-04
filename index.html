@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        .wce {
+            z-index: 1000;
+            position: absolute;
+            margin-top: 16.2vh;
+            margin-left: 30vw;
+            background-color: rgba(0,0,0,0.4);
+            font-size: 2.7vw;
+            width: 36vw;
+            height: 54vh;
+            color: red;
+            padding-bottom: 21.6vh;
+        }
+        /*        .forward {
+            position: absolute;
+            width: 6vw;
+            height: 10.8vh;
+            margin-top: 2.16vh;
+            margin-left: 60vw;
+            background-image: url(forward.PNG);
+            background-size: cover;
+        }*/
+        /*        .back {
+            position: absolute;
+            width: 6vw;
+            height: 10.8vh;
+            margin-top: 2.16vh;
+            margin-left: 36vw;
+            background-image: url(forward.PNG);
+            background-size:cover;
+        }*/
+        .ueq {
+            background-color: black;
+            color: white;
+            opacity: 100%;
+        }
+
+        .eq {
+            background-color: green;
+            color: white;
+        }
+
+        .vso {
+            margin-left: 60vw;
+            background-color: wheat;
+            width: 6vw;
+        }
+
+        .s6 {
+            opacity: 80%;
+            font-size: 1.8vw;
+            color: green;
+            position: absolute;
+            margin-top: 70.2vh;
+            width: 15vw;
+            height: 27vh;
+            margin-left: 42vw;
+            background-image: url(eeskin.jepg.webp);
+            background-size: cover;
+        }
+
+        .s5 {
+            opacity: 80%;
+            font-size: 1.8vw;
+            color: green;
+            position: absolute;
+            margin-top: 37.8vh;
+            width: 15vw;
+            height: 27vh;
+            margin-left: 78vw;
+            background-image: url(playera-pawns.jpeg);
+            background-size: cover;
+        }
+
+        .s4 {
+            opacity: 80%;
+            font-size: 1.8vw;
+            color: green;
+            position: absolute;
+            margin-top: 37.8vh;
+            width: 15vw;
+            height: 27vh;
+            margin-left: 60vw;
+            background-image: url(player-pawngreens.jpeg);
+            background-size: cover;
+        }
+
+        .s3 {
+            opacity: 80%;
+            font-size: 1.8vw;
+            color: green;
+            position: absolute;
+            margin-top: 37.8vh;
+            width: 15vw;
+            height: 27vh;
+            margin-left: 42vw;
+            background-image: url(pawnas.png);
+            background-size: cover;
+        }
+
+        .s2 {
+            opacity: 80%;
+            font-size: 1.8vw;
+            color: green;
+            position: absolute;
+            margin-top: 37.8vh;
+            width: 15vw;
+            height: 27vh;
+            margin-left: 24vw;
+            background-image: url(pawns.png);
+            background-size: cover;
+        }
+
+        .s1 {
+            opacity: 80%;
+            font-size: 1.8vw;
+            color: green;
+            position: absolute;
+            margin-top: 37.8vh;
+            width: 15vw;
+            height: 27vh;
+            margin-left: 6vw;
+            background-image: url(pawnb.png);
+            background-size: cover;
+        }
+
+        .store {
+            padding-top: 0vh;
+            border-radius: 1.2vw;
+            box-shadow: 0.72vw 0.86vh 0.12vw black;
+            position: absolute;
+            margin-top: 43.2vh;
+            margin-left: 72vw;
+            height: 16.2vh;
+            width: 15vw;
+            background-color: green;
+            color: white;
+            font-size: 1.2vw;
+        }
+
+        .resign {
+            display: none;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            padding-left: 3vw;
+            padding-top: 3.24vh;
+            font-size: 1.2vw;
+            position: absolute;
+            width: 6vw;
+            height: 10.8vh;
+            margin-top: 2.16vh;
+            margin-left: 46.8vw;
+            background-image: url(resign.jpeg);
+            background-size: cover;
+        }
+
+        .scoreb {
+            border-radius: 1.2vw;
+            text-align: center;
+            position: absolute;
+            width: 4.8vw;
+            margin-top: 2.16vh;
+            margin-left: 84vw;
+            background-color: white;
+        }
+
+        .scorea {
+            border-radius: 1.2vw;
+            text-align: center;
+            position: absolute;
+            background-color: white;
+            margin-top: 2.16vh;
+            margin-left: 13.2vw;
+            width: 4.8vw;
+        }
+
+        .bmm {
+            position: absolute;
+            margin-left: 96vw;
+            margin-top: 0vh;
+            height: 7.56vh;
+            width: 4.2vw;
+            background-image: url(bmm.png);
+            background-size: cover;
+        }
+
+        .ff {
+            position: absolute;
+            margin-top: 43.2vh;
+            margin-left: 6vw;
+            background-image: url(qurriforff.jepg.webp);
+            width: 30vw;
+            height: 43.2vh;
+            background-size: cover;
+        }
+
+        .srules {
+            border: none;
+            position: absolute;
+            margin-top: 16.2vh;
+            margin-left: 30vw;
+            height: 68.04vh;
+            width: 36vw;
+            color: white;
+            font-size: 1.2vw;
+            background-color: black;
+            text-align: left;
+        }
+
+        .uwin {
+            position: absolute;
+            display: none;
+        }
+
+        .texta {
+            opacity: 30%;
+            margin-top: 3.78vh;
+            width: 12vw;
+            height: 4.32vh;
+            background-color: red;
+            color: wheat;
+            text-align: center;
+            font-size: 2.4vw;
+        }
+
+        .textb {
+            opacity: 30%;
+            margin-top: 3.78vh;
+            height: 4.32vh;
+            width: 12vw;
+            background-color: blue;
+            color: yellow;
+            text-align: center;
+            font-size: 2.4vw;
+        }
+
+        .title {
+            position: absolute;
+            margin-left: 5%;
+            color: yellow;
+            font-size: 9vw;
+        }
+
+        .rulest {
+            padding-top: 6.48vh;
+            border-radius: 1.2vw;
+            box-shadow: 0.72vw 0.86vh 0.12vw black;
+            position: absolute;
+            margin-top: 64.8vh;
+            margin-left: 72vw;
+            height: 9.72vh;
+            width: 15vw;
+            background-color: green;
+            color: white;
+            font-size: 1.2vw;
+        }
+
+        .rules {
+            padding-top: 0vh;
+            border-radius: 1.2vw;
+            box-shadow: 0.72vw 0.86vh 0.12vw black;
+            position: absolute;
+            margin-top: 64.8vh;
+            margin-left: 72vw;
+            height: 16.2vh;
+            width: 15vw;
+            background-color: green;
+            color: white;
+            font-size: 1.2vw;
+        }
+
+        .win {
+            z-index: 1000;
+            opacity: 100%;
+            position: absolute;
+            margin-top: 16.2vh;
+            margin-left: 30vw;
+            background-image: url(backroundforhtml.jpg);
+            font-size: 2.7vw;
+            width: 36vw;
+            height: 54vh;
+            color: yellow;
+            padding-bottom: 21.6vh;
+        }
+
+        .gametorb {
+            width: 100%;
+            font-size: 2.7vw;
+            height: 5.4vh;
+            background-color: blue;
+            color: white;
+            text-align: center;
+        }
+
+        .gametora {
+            width: 100%;
+            font-size: 2.7vw;
+            height: 5.4vh;
+            background-color: red;
+            color: wheat;
+            text-align: center;
+        }
+
+        .wallsbhx {
+            border: none;
+            background-image: url(wallsx.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .wallsbh {
+            border: none;
+            background-image: url(wallsy.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .wallsbi {
+            border: none;
+            background-image: url(wallsx.jpg);
+            background-size: cover;
+        }
+
+        .playercm {
+            opacity: 0.7;
+            background-color: #5f4b8bff;
+            border: solid purple;
+            border-width: 0.65vh 0.36vw; /* was 6px: top/bottom follow the height, left/right the width */
+        }
+
+        .wall-tilesn {
+            background-color: black;
+            border: none;
+        }
+
+        .sbut {
+            z-index: 1000;
+            border-radius: 1.2vw;
+            box-shadow: 0.72vw 0.86vh 0.12vw black;
+            position: absolute;
+            margin-top: 21.6vh;
+            margin-left: 72vw;
+            height: 16.2vh;
+            width: 15vw;
+            background-color: green;
+            color: white;
+            font-size: 1.2vw;
+        }
+
+        .game {
+            border: none;
+            margin-left: 31.2vw;
+            background-color: black;
+            width: 39.96vw;
+            height: 79.92vh;
+            font-size: 1.73vh; /* was 16px: the text size decides the height of each row of tiles, so it must scale too */
+        }
+
+            .game button {
+                font-size: 1.44vh; /* was 13.33px (the browser's default button text size), same reason */
+            }
+
+        .tilea {
+            display: none;
+            position: absolute;
+            top: 5.4vh;
+            left: 12vw;
+        }
+
+        .tileb {
+            display: none;
+            position: absolute;
+            top: 5.4vh;
+            right: 9vw;
+        }
+
+        .wallsb {
+            background-size: cover;
+            background-repeat: no-repeat;
+            margin-top: 5.4vh;
+            border: none;
+            background-image: url(wallsx.jpg);
+        }
+
+        .wallsa {
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin-top: 5.4vh;
+            border: none;
+            background-image: url(wallsx.jpg);
+        }
+
+        .body {
+            overflow: hidden;
+            height: 100vh;
+            background-attachment: fixed;
+            background-repeat: repeat;
+            background-size: 110%;
+        }
+
+        .playeras6 {
+            background-image: url(eeskin.jepg.webp);
+            background-size: cover;
+        }
+
+        .playeras5 {
+            background-image: url(playera-pawn.jpeg);
+            background-size: cover;
+        }
+
+        .playeras4 {
+            background-image: url(player-pawngreen.jpeg);
+            background-size: cover;
+        }
+
+        .playeras3 {
+            background-image: url(pawna.png);
+            background-size: cover;
+        }
+
+        .playeras2 {
+            background-image: url(pawn.png);
+            background-size: cover;
+        }
+
+        .playeras1 {
+            background-image: url(pawnb.png);
+            background-size: cover;
+        }
+
+        .playerb {
+            background-image: url(playerb-pawn.jpg);
+            background-size: cover;
+        }
+
+        .player-tiles {
+            background-color: #8b5e3c;
+            border: solid #6b4226;
+            border-width: 0.65vh 0.36vw; /* was 6px: top/bottom follow the height, left/right the width */
+        }
+
+        .wall-tilesa {
+            background-color: black;
+            border: none;
+        }
+
+        .wall-tilesb {
+            background-color: black;
+            border: none;
+        }
+    </style>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body class="body" style="background-image: url(backroundforhtml.jpg)">
+    <div id="vso" class="vso">
+
+    </div>
+    <button id="1000" class="uwin" onclick="pawn(this)">
+        <div class='eq'> equipped </div>
+    </button>
+    <button id="1001" class="uwin" onclick="pawn(this)">
+        <div class='ueq'> cost:1000 </div>
+    </button>
+    <button id="1002" class="uwin" onclick="pawn(this)">
+        <div class='ueq'> cost:1000 </div>
+
+    </button>
+    <button id="1003" class="uwin" onclick="pawn(this)">
+        <div class='ueq'> cost:1000 </div>
+
+    </button>
+    <button id="1004" class="uwin" onclick="pawn(this)">
+        <div class='ueq'> cost:1000 </div>
+
+    </button>
+    <button id="1005" class="uwin" onclick="pawn(this)">
+    </button>
+    <div class="title" id="title">
+        tAPY's qurridor,
+        <br />
+        HAVE FUN!
+    </div>
+    <button id="store" class="store" onclick="store()">
+        shop
+    </button>
+    <div id="scorea" class="uwin">
+        0
+    </div>
+    <div id="scoreb" class="uwin">
+        0
+    </div>
+    <button class="rules" id="rules" onclick="BMM()">
+        rules for qurridor:
+    </button>
+    <button class="sbut" id="button" onclick="askStart()">
+        start a game:
+
+    </button>
+    <div id="s" class="uwin" style="text-align:center" onclick="BMM2()">
+        <div id="game">
+
+        </div>
+    </div>
+    <div class="tilea" id="tilea">
+
+    </div>
+    <div class="tileb" id="tileb">
+    </div>
+    <div class="ff" id="ff">
+
+    </div>
+    <div id="resign" class="resign" onclick="resignF()">
+        resign
+    </div>
+    <!--<div id="forward" class="forward" onclick="arrp(this)">
+
+    </div>
+    <div id="back" class="back" onclick="arrp(this)">
+
+    </div>-->
+    <button id="settingsBtn" onclick="toggleSettings()" style="
+    position: absolute;
+    top: 2.16vh;
+    left: 1.2vw;
+    width: 3.6vw;
+    height: 6.48vh;
+    border-radius: 50%;
+    background-color: green;
+    color: white;
+    font-size: 1.44vw;
+    border: none;
+    box-shadow: 0.24vw 0.43vh 0.12vw black;
+    cursor: pointer;
+    z-index: 10;
+">
+        ⚙
+    </button>
+    <div id="settings" class="uwin" style="position:absolute; top: 9.72vh; left: 1.2vw; background-color:black; color:white; padding: 1.62vh 0.9vw 1.62vh 0.9vw; border-radius: 0.6vw; width: 15vw; font-size: 0.96vw; z-index:10;">
+        <div style="margin-bottom: 1.08vh;">
+            <strong>Mode</strong><br />
+            <label><input type="radio" name="gamemode" value="pve" checked onchange="setGameMode('pve')"> vs Computer</label><br />
+            <label><input type="radio" name="gamemode" value="pvp" onchange="setGameMode('pvp')"> vs Player (PvP)</label>
+        </div>
+        <div>
+            <strong>Difficulty</strong><br />
+            <select id="difficultySelect" onchange="setDifficulty(this.value)">
+                <option value="2">Easy</option>
+                <option value="3" selected>Medium</option>
+                <option value="4">Hard</option>
+            </select>
+        </div>
+    </div>
+    <script src="qurridorS.js"></script>
+    <script src="auth.js"></script>
+    <script src="online.js"></script>
+    <script src="recorder.js"></script>
+    <script src="history.js"></script>
+</body>
+</html>
