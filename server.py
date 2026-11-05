@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
-from flask import Flask
+from flask import Flask, send_from_directory
 # Initialize Flask to point to your HTML/JS folder (e.g., 'public' or current directory)
 app = Flask(__name__, static_folder='', static_url_path='')
 
