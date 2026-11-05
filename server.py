@@ -6,7 +6,6 @@ Run:   python server.py              (open http://localhost:8000)
 Other PCs on your network:  python server.py --host 0.0.0.0
 """
 import argparse, hashlib, hmac, json, mimetypes, os, re, secrets, sqlite3, threading, time
-import os
 from datetime import datetime, timedelta, timezone
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
