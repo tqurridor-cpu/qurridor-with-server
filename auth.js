@@ -24,7 +24,7 @@
     // ---------------------------------------------------------------
     function call(action, body) {
         // fetch = the browser's way of sending a request to the server
-        return fetch(API + "?a=" + action, {          // e.g. "api?a=login"
+        return fetch("/api?a=" + action, {          // e.g. "api?a=login"
             method: "POST",                           // we always send with POST
             credentials: "same-origin",               // include the login cookie
             headers: { "Content-Type": "application/json" },   // we are sending JSON text
