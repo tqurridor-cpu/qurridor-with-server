@@ -543,17 +543,18 @@ class Handler(BaseHTTPRequestHandler):
         self.send_json(200, {"ok": True})
 
 
+
 def main():
     global SECURE_COOKIE
     ap = argparse.ArgumentParser()
-    ap.add_argument("--host", default="127.0.0.1", help="use 0.0.0.0 to allow other devices")
-    ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--host", default="0.0.0.0", help="use 0.0.0.0 to allow other devices")
+    ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8000)))
     ap.add_argument("--https", action="store_true", help="mark cookies Secure (use when behind an HTTPS proxy)")
     a = ap.parse_args()
     SECURE_COOKIE = a.https
     init_db()
     srv = ThreadingHTTPServer((a.host, a.port), Handler)
-    print(f"Qurridor running at http://{'localhost' if a.host in ('127.0.0.1', '0.0.0.0') else a.host}:{a.port}/  (Ctrl+C to stop)")
+    print(f"Qurridor running at http://{a.host}:{a.port}/  (Ctrl+C to stop)")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
