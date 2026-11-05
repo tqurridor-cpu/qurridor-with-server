@@ -6,12 +6,24 @@ Run:   python server.py              (open http://localhost:8000)
 Other PCs on your network:  python server.py --host 0.0.0.0
 """
 import argparse, hashlib, hmac, json, mimetypes, os, re, secrets, sqlite3, threading, time
+import os
 from datetime import datetime, timedelta, timezone
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
 from flask import Flask
-app = Flask(__name__)
+# Initialize Flask to point to your HTML/JS folder (e.g., 'public' or current directory)
+app = Flask(__name__, static_folder='public', static_url_path='')
+
+@app.route('/')
+def serve_index():
+    # Serves index.html from your static folder when visiting the root URL
+    return send_from_directory(app.static_folder, 'index.html')
+
+# Catch-all route for other static files (js, css, images)
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(ROOT, "qurridor.db")
 ITERATIONS = 200_000
@@ -513,4 +525,5 @@ def main():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port
