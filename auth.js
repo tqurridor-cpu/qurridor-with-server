@@ -222,15 +222,6 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
             else location.reload();                                                   // guest: reload to see the login box again
         };
         bar.appendChild(b);
-        if (canLogout) {                                         // only real accounts have history
-            var hb = document.createElement("button");
-            hb.textContent = "history";
-            hb.onclick = function () {
-                renderHistory();                                                      // refresh the list
-                hist.style.display = hist.style.display == "block" ? "none" : "block";   // show/hide the popup
-            };
-            bar.appendChild(hb);
-        }
     }
 
 
