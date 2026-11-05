@@ -15,7 +15,7 @@
     // lastSaved : a text copy of what we last saved, so we only save when something changed
     // baseA/baseB: the win counters (wina/winb) the last time we looked, to spot a finished game
     // history   : the list of your last 10 games shown in the "history" popup
-    var loggedIn = false, lastSaved = "", baseA = 0, baseB = 0, history = [];
+    var loggedIn = false, lastSaved = "", baseA = 0, baseB = 0;
 
 
     // ---------------------------------------------------------------
@@ -80,7 +80,6 @@
 
         lastSaved = JSON.stringify(getState());   // remember this state so we don't re-save it
         baseA = wina; baseB = winb;               // remember the win counters as the starting point
-        history = d.games || [];                  // load the last-10-games list
     }
 
     // save(useBeacon): send the current state to the server, but only if it changed
@@ -108,13 +107,17 @@
     // GAME HISTORY: notice when a game ends
     // ---------------------------------------------------------------
 
-    // record(result): tell the server "this game was a win/loss", and refresh the list
-    function record(result) {
-        call("game", { result: result, moves: tor }).then(function (res) {   // tor = number of turns played
-            if (res.ok) { history = res.games; renderHistory(); }            // server sends back the newest 10
-        });
-    }
-
+function record(result, winner) {
+    var online = window.QO && QO.active;
+    call("game", {
+        result: result, moves: tor,
+        p1: p1Name(), p2: p2Name(),
+        mode: online ? "online" : (iscomputerplaying ? "computer" : "2 players"),
+        level: (iscomputerplaying && !online) ? aiDepth : 0,
+        winner: winner,
+        log: QHistory.encode(gameLog)
+    });
+}
     // Every 0.3 seconds, check if the game's win counters went up.
     // If they did, a game just finished.
     setInterval(function () {
@@ -149,10 +152,6 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
         "#qa-bar{position:fixed;left:6px;bottom:6px;z-index:9998;background:#fff;border-radius:10px;padding:4px 10px;font:14px Verdana,sans-serif}" +
         // the buttons inside that bar (log out, history, online)
         "#qa-bar button{margin-left:8px;cursor:pointer}" +
-        // the history popup (hidden until you click "history")
-        "#qa-hist{position:fixed;left:6px;bottom:44px;z-index:9998;background:#fff;border-radius:10px;padding:10px 14px;font:14px Verdana,sans-serif;display:none;max-height:60vh;overflow:auto}" +
-        // WIN is green, LOSS is red
-        "#qa-hist .w{color:#15803d}#qa-hist .l{color:#b91c1c}" +
         // lets the player-name boxes grow wider so long usernames fit
         ".texta,.textb,.textat,.textbt{width:auto!important;min-width:200px;padding:0 10px;box-sizing:border-box;white-space:nowrap}";
     document.head.appendChild(css);               // put the CSS into the page
@@ -175,24 +174,6 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
     // msg(t): show a message (like an error) in the login box
     function msg(t) { $("qa-msg").textContent = t || ""; }
 
-    // Create the (empty, hidden) history popup
-    var hist = document.createElement("div");
-    hist.id = "qa-hist";
-    document.body.appendChild(hist);
-
-    // renderHistory(): fill the popup with your last 10 games
-    function renderHistory() {
-        var h = "<b>Last 10 games</b>";                          // the popup title
-        if (!history.length) h += "<div>No games yet</div>";     // nothing played yet
-        history.forEach(function (g) {                           // one line per game
-            var t = new Date(g.at).toLocaleString();             // the date/time in your local format
-            // WIN in green or LOSS in red, then the number of turns and the time
-            h += "<div><span class='" + (g.result == "win" ? "w'>WIN" : "l'>LOSS") + "</span> &middot; " +
-                 g.moves + " turns &middot; " + t + "</div>";
-        });
-        hist.innerHTML = h;                                      // put the text into the popup
-    }
-
     // showBar(text, canLogout): show the little bar at the bottom-left
     //   text      = what it says (e.g. "player: bob")
     //   canLogout = true for real accounts, false for guests
@@ -207,15 +188,6 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
             else location.reload();                                                   // guest: reload to see the login box again
         };
         bar.appendChild(b);
-        if (canLogout) {                                         // only real accounts have history
-            var hb = document.createElement("button");
-            hb.textContent = "history";
-            hb.onclick = function () {
-                renderHistory();                                                      // refresh the list
-                hist.style.display = hist.style.display == "block" ? "none" : "block";   // show/hide the popup
-            };
-            bar.appendChild(hb);
-        }
     }
 
 
