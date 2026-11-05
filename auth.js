@@ -109,11 +109,26 @@
     // ---------------------------------------------------------------
 
     // record(result): tell the server "this game was a win/loss", and refresh the list
-    function record(result) {
-        call("game", { result: result, moves: tor }).then(function (res) {   // tor = number of turns played
-            if (res.ok) { history = res.games; renderHistory(); }            // server sends back the newest 10
-        });
-    }
+function record(result, winner) {
+    var online = window.QO && QO.active;
+    call("game", {
+        result: result, moves: tor,
+        p1: p1Name(), p2: p2Name(),
+        mode: online ? "online" : (iscomputerplaying ? "computer" : "2 players"),
+        level: (iscomputerplaying && !online) ? aiDepth : 0,
+        winner: winner,                          // 1 = player 1 won, 2 = player 2 won
+        log: QHistory.encode(gameLog)
+    }).then(function (res) {
+        if (res.ok) { history = res.games; renderHistory(); }
+    });
+}
+
+setInterval(function () {
+    if (!loggedIn) return;
+    var guestSide = (window.QO && QO.active && QO.side === 1) || iPlayP2();
+    if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win", 1); }
+    else if (winb > baseB) { baseA = wina; baseB = winb; record(guestSide ? "win" : "loss", 2); }
+}, 300);
 
     // Every 0.3 seconds, check if the game's win counters went up.
     // If they did, a game just finished.
