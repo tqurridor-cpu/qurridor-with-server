@@ -13,7 +13,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, unquote
 from flask import Flask
 # Initialize Flask to point to your HTML/JS folder (e.g., 'public' or current directory)
-app = Flask(__name__, static_folder='public', static_url_path='')
+app = Flask(__name__, static_folder='', static_url_path='')
 
 @app.route('/')
 def serve_index():
