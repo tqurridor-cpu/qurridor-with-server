@@ -6,12 +6,6 @@
 //   Both computers run the full game. Every accepted move/wall is sent to the
 //   server, and the other computer replays the same click on its own board.
 //   The server only passes messages along and checks whose turn it is.
-//
-// NEW IN THIS VERSION:
-//   1. SKINS: each player tells the other which pawn skin they wear, so the host's
-//      pawn (player 1) wears the host's skin and the guest's pawn (player 2) wears
-//      the guest's skin on BOTH screens.
-//   2. MAIN MENU: clicking the "you win / you lost" box now takes you back to the main menu.
 // =====================================================================
 
 // Wrapped in a function so the variable names here don't clash with qurridor.js
@@ -30,9 +24,9 @@
     //   host/guest : usernames of the two players
     //   applyAll   : after a page refresh, replay ALL events (including my own) to rebuild the board
     //   msg    : an error/status message to show in the top bar
-    //   skins  : [hostSkin, guestSkin] - the skin number (0-5) each player wears (0 = default)
-    var QO = window.QO = { active: false, side: 0, code: "", over: false, since: 0, host: "", guest: "", applyAll: false, msg: "", skins: [0, 0], oppSkin: -1 };
-    //   oppSkin: the opponent's skin number (-1 = not known yet). qurridorS.js reads it to draw the opponent's pawn.
+    //   oppSkin: the skin number (0-5) the OTHER player has equipped (-1 = unknown); qurridorS.js uses it to draw their pawn
+    //   leave  : the leave() function below, shared so the "you won / you lost" box can call it
+    var QO = window.QO = { active: false, side: 0, code: "", over: false, since: 0, host: "", guest: "", applyAll: false, msg: "", oppSkin: -1, leave: null };
 
     // Keep the game's ORIGINAL functions (with an underscore) because below we replace
     // the normal ones with versions that also talk to the server.
@@ -43,8 +37,7 @@
     // sending   : true while one send is in progress
     // oppAgo    : seconds since the opponent last contacted the server
     // waiting   : true while the host sits in the "waiting for opponent" box
-    // waitTries : how many times we waited for the send line to empty before leaving
-    var pollTimer = null, q = [], sending = false, oppAgo = 0, waiting = false, waitTries = 0;
+    var pollTimer = null, q = [], sending = false, oppAgo = 0, waiting = false;
 
 
     // ---------- small helpers ----------
@@ -54,64 +47,6 @@
     function oppName() { return QO.side === 0 ? QO.guest : QO.host; }
     // setVso(): refresh the coins text on screen
     function setVso() { vsod.innerHTML = "vso:" + vso; }
-
-
-    // ---------------------------------------------------------------
-    // SKINS: make both screens show the same pawn pictures
-    // ---------------------------------------------------------------
-
-    // qurridorS.js draws MY pawn with my own skin (skinss) and the OTHER pawn with QO.oppSkin,
-    // so all this file has to do is fill in QO.oppSkin (see setSkin) and redraw the pawns.
-
-    // redrawBoard(): paint the board from the arr array again (same loop the game uses)
-    function redrawBoard() {
-        if (!games.classList.contains("game")) return;  // the rules screen is showing -> don't overwrite it
-        var text = "";
-        for (var r = 0; r < arrrows; r++) {
-            for (var c = 0; c < arr[r].length; c++) text += arr[r][c];
-            text += "</br> ";
-        }
-        games.innerHTML = text;
-    }
-
-    // refreshPawnSkins(): the two pawns are stored in arr as html text. Find them and rebuild them
-    // with the current skins, so a skin that arrives AFTER the board was built still shows up.
-    function refreshPawnSkins() {
-        if (!QO.active) return;
-        var changed = false;
-        for (var r = 0; r < arr.length; r++) {
-            for (var c = 0; c < arr[r].length; c++) {
-                var cell = arr[r][c];
-                if (typeof cell !== "string") continue;
-                if (!/class='(playeras\d|playerb)'/.test(cell)) continue;   // only pawns have these classes
-                if (cell.indexOf("id='152'") > -1) { arr[r][c] = P1_TILE(); changed = true; }       // player 1's pawn
-                else if (cell.indexOf("id='8'") > -1) { arr[r][c] = P2_TILE(); changed = true; }    // player 2's pawn
-            }
-        }
-        if (changed) redrawBoard();
-    }
-
-    // setSkin(side, s): remember which skin a player wears and update the pawns on screen
-    function setSkin(side, s) {
-        s = parseInt(s, 10);
-        if (isNaN(s) || s < 0 || s > 5 || (side !== 0 && side !== 1)) return;   // ignore nonsense
-        if (QO.skins[side] === s) return;               // nothing changed
-        QO.skins[side] = s;
-        if (side !== QO.side) QO.oppSkin = s;           // the opponent's skin -> qurridorS.js draws their pawn with it
-        else if (QO.applyAll) skinss = s;               // after a page refresh: get my own skin back from my replayed event
-        refreshPawnSkins();
-    }
-
-    // sendSkin(): tell the server (and so the opponent) which skin I wear.
-    // It is sent on its own, NOT through the move queue, so a refusal can never block my moves.
-    // The skin is ALSO attached to every move/wall (see act), so the opponent gets it either way.
-    function sendSkin(tries) {
-        tries = (tries === undefined) ? 3 : tries;
-        if (!QO.code || tries <= 0) return;
-        QA.call("room_send", { code: QO.code, t: "skin", skin: QO.skins[QO.side] }).then(function (res) {
-            if (!res.ok && !res.fatal) setTimeout(function () { sendSkin(tries - 1); }, 1500);   // network problem: retry a few times
-        });
-    }
 
 
     // ---------------------------------------------------------------
@@ -155,8 +90,7 @@
             // for walls ask qurridorS.js for the real engine id (the guest's board is flipped,
             // so the slot the guest clicked is not the slot the wall really starts at)
             var sendId = (kind === "wall" && window.QWallAnchor) ? window.QWallAnchor(p) : p.id;
-            // send: type, which square, turn number, and my skin (so the opponent always learns it)
-            enqueue({ t: kind, id: String(sendId), n: before, skin: QO.skins[QO.side] });
+            enqueue({ t: kind, id: String(sendId), n: before });   // send: type, which square, turn number
             afterAction(a, b);                          // check if that action ended the game
         }                                               // otherwise it was illegal: nothing is sent
     }
@@ -186,17 +120,6 @@
     // Switching between computer / 2 players isn't allowed during an online match
     setGameMode = function (m) { if (!QO.active) _setGameMode(m); };
 
-    // QO.leave(): qurridorS.js's askStart() calls this when you click the "you win / you lost" box online.
-    // It leaves the room and reloads the page, which is the main menu.
-    QO.leave = function () { waitTries = 0; leaveWhenSent(); };
-
-    // leaveWhenSent(): leave, but first give the send line (for example my last "end" message)
-    // up to ~3 seconds to reach the server
-    function leaveWhenSent() {
-        if ((q.length || sending) && ++waitTries < 10) return setTimeout(leaveWhenSent, 300);
-        leave();
-    }
-
 
     // ---------------------------------------------------------------
     // RESULTS (who won, coins)
@@ -209,7 +132,7 @@
         if (wina === a && winb === b) return;           // counters didn't change -> game not over
         QO.over = true;
         var winner = wina > a ? 0 : 1, iWon = winner === QO.side;   // who won, and was it me
-        del.innerHTML = (iWon ? "you win!" : "you lost!") + " <br /> <br /> click for the main menu";   // the result box
+        del.innerHTML = (iWon ? "you win!" : "you lost!") + " <br /> <br /> click to leave";   // the result box
         if (winner === 0 && QO.side === 1) vso -= 100;  // engine gave the host's coins on my screen -> take them back
         if (winner === 1 && QO.side === 1) vso += 100;  // I'm the guest and won: engine gave nothing, so add them
         setVso();
@@ -226,7 +149,7 @@
         rules.style.display = "none";                   // hide the rules/menu button
         del.classList = "win";                          // show the big result box
         del.style.display = "block";
-        del.innerHTML = (iLost ? "you lost!" : "your opponent left - you win!") + " <br /> <br /> click for the main menu";
+        del.innerHTML = (iLost ? "you lost!" : "your opponent left - you win!") + " <br /> <br /> click to leave";
         if (!iLost) { vso += 100; setVso(); }           // the winner gets 100 coins
     }
 
@@ -235,20 +158,18 @@
     // REPLAYING THE OPPONENT'S ACTIONS on my board
     // ---------------------------------------------------------------
 
-    // applyEvent(e): e is one action from the server ({t: "move"/"wall"/"resign"/"left"/"skin", id, side})
+    // applyEvent(e): e is one action from the server ({t: "move"/"wall"/"resign"/"left", id, side})
     function applyEvent(e) {
         if (e.t === "resign" || e.t === "left") { if (!QO.over) applyResign(e.side); return; }   // opponent quit
-        if (e.t === "skin") { setSkin(e.side, e.skin); return; }   // the opponent told us which skin they wear
         if (e.t !== "move" && e.t !== "wall") return;   // ignore other kinds of events
-        if (e.skin !== undefined) setSkin(e.side, e.skin);   // moves and walls carry the sender's skin too
         if (QO.over) return;                            // match already finished
         if (del.classList == "wce") del.style.display = "none";   // hide a leftover "illegal move" box
         allow = 1;                                      // make sure the game accepts clicks
         if (tor % 2 !== e.side) { desync("turn mismatch"); return; }   // the action came from the wrong side
         var before = tor, a = wina, b = winb;
-        var run = (e.t === "move") ? _move : _wallf;
-        // "click" the same square on my board; if recorder.js is loaded it also logs the action in gameLog
-        if (window.QRecordRun) QRecordRun(run, e.t, { id: e.id }); else run({ id: e.id });
+        var run = (e.t === "move" ? _move : _wallf);        // the game's own function (the wrapped ones would refuse: not my turn)
+        // "click" the same square on my board. recorder.js (if loaded) writes it into the game log on the way.
+        if (window.QRecordRun) window.QRecordRun(run, e.t, { id: e.id }); else run({ id: e.id });
         if (tor === before) { desync("move rejected"); return; }   // my board refused it -> out of sync
         afterAction(a, b);                              // check if it ended the game
     }
@@ -259,7 +180,7 @@
     // ---------------------------------------------------------------
     function poll() {
         if (!QO.code) return;                           // not in a room -> stop polling
-        QA.call("room_poll", { code: QO.code, since: QO.since }).then(function (res) {
+        QA.call("room_poll", { code: QO.code, since: QO.since, skin: skinss }).then(function (res) {
             if (!QO.code) return;                       // we left while waiting for the answer
             if (res.ok) {
                 oppAgo = res.oppAgo;                    // how long since the opponent was last seen
@@ -287,22 +208,21 @@
         QO.over = false;
         QO.msg = "";
         QO.host = res.host; QO.guest = res.guest;       // remember both usernames
+        // the server sends [host's skin, guest's skin]; keep the OTHER player's one so their pawn is drawn right.
+        // This must be known BEFORE BuildGame() below, because the board is built with the pawn pictures.
+        QO.oppSkin = res.skins ? res.skins[1 - QO.side] : -1;
         waiting = false;
         onlineNames = [res.host, res.guest];            // makes qurridor.js show the usernames in the score boxes
         iscomputerplaying = 0;                          // no computer opponent online
-        // my skin must be known BEFORE the board is built, because the pawns are built with it.
-        // (After a page refresh my skin variable was reset, so skip this: the replayed events restore it.)
-        if (!QO.applyAll) QO.skins[QO.side] = skinss;
         panel.style.display = "none";                   // hide the lobby box
         if (del.classList == "wce") del.classList = "sbut";   // clear a leftover "illegal move" box
         BuildGame();                                    // build a fresh board
         refreshNames();                                 // update the name labels
         _game();                                        // start the game (original function)
         rules.style.display = "none";                   // hide the rules/menu button
-        if (!QO.applyAll) sendSkin();                   // tell the opponent which skin I wear
     }
 
-    // leave(): leave the room and reload the page (the reloaded page IS the main menu)
+    // leave(): leave the room and reload the page
     function leave() {
         var code = QO.code;
         QO.code = ""; clearTimeout(pollTimer);          // stop polling
@@ -311,6 +231,7 @@
         QA.call("room_leave", { code: code }).then(done, done);   // tell the server, then reload
         setTimeout(done, 2500);                         // reload anyway after 2.5s if the server is slow
     }
+    QO.leave = leave;                                   // qurridorS.js calls this when you click the "you won / you lost" box
 
 
     // ---------------------------------------------------------------
@@ -379,7 +300,8 @@
 
     // createRoom(): ask the server for a new room, become the host (side 0)
     function createRoom() {
-        QA.call("room_create", {}).then(function (res) {
+        // skinss = my equipped skin; the server passes it on to my opponent
+        QA.call("room_create", { skin: skinss }).then(function (res) {
             if (!res.ok) return err(res.error);         // e.g. not logged in
             QO.code = res.code; QO.side = 0; QO.since = 0; QO.applyAll = false;
             showWaiting(); poll();                      // show the code and start asking for news
@@ -390,7 +312,7 @@
     function joinRoom() {
         var code = document.getElementById("qo-join-code").value.trim().toUpperCase();   // read the typed code
         if (!code) return err("Type the room code");
-        QA.call("room_join", { code: code }).then(function (res) {
+        QA.call("room_join", { code: code, skin: skinss }).then(function (res) {
             if (!res.ok) return err(res.error);         // e.g. wrong code, room full
             QO.code = res.code; QO.side = 1; QO.since = 0; QO.applyAll = false;
             poll();                                     // the match starts when poll sees "started"
