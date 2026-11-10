@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <style>
@@ -360,6 +360,7 @@
 
             .game button {
                 font-size: 1.44vh; /* was 13.33px (the browser's default button text size), same reason */
+                padding: 0; /* the default 6px side padding made the thin wall slots wider than set, so rows got too wide and wrapped on small screens */
             }
 
         .tilea {
@@ -390,6 +391,38 @@
             margin-top: 5.4vh;
             border: none;
             background-image: url(wallsx.jpg);
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        /* The game is drawn for a wide (landscape) screen. On a phone held upright show this message instead of a squashed board. */
+        #rotate-hint {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9990;            /* above the game, below the login / popup boxes */
+            background: #0b3d1e;
+            color: #fff;
+            font: 20px Verdana, sans-serif;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+            #rotate-hint .turn {
+                font-size: 64px;
+                margin-bottom: 12px;
+            }
+
+        @media (orientation: portrait) and (max-width: 820px) {
+            #rotate-hint {
+                display: flex;
+            }
         }
 
         .body {
@@ -452,6 +485,9 @@
         }
     </style>
     <meta charset="utf-8" />
+    <!-- Without this line a phone lays the page out as if the screen were 980px wide, then shrinks it and makes the text bigger,
+         which breaks the board. With it the page uses the real screen size. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
 </head>
 <body class="body" style="background-image: url(backroundforhtml.jpg)">
@@ -552,6 +588,10 @@
                 <option value="4">Hard</option>
             </select>
         </div>
+    </div>
+    <div id="rotate-hint">
+        <div class="turn">&#x21BB;</div>
+        Turn your phone sideways to play
     </div>
     <script src="qurridorS.js"></script>
     <script src="auth.js"></script>
