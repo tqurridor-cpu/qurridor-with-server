@@ -1,10 +1,12 @@
 // =====================================================================
 // history.js - saves every finished game and replays it step by step
+// Logged-in players: the games are saved in the SERVER database (so they follow you to any computer).
+// Guests: the games stay in this browser (localStorage), as before.
 // Load it AFTER recorder.js (the last script in the page):
 //     <script src="recorder.js"></script>
 //     <script src="history.js"></script>
 //
-//   1. a small "database" of finished games (kept in this browser, one list per username)
+//   1. a small "database" of finished games (server database for accounts, this browser for guests)
 //   2. a "history" button on the main menu that lists the saved games
 //   3. a replay bar with a  back  and a  forward  button (and the left / right arrow keys)
 // =====================================================================
@@ -35,6 +37,7 @@
         });
     }
 
+    // ----- this browser's copy (guests, and the "outbox" of games not uploaded yet) -----
     function loadAll() {
         try {
             var a = JSON.parse(localStorage.getItem(storageKey()) || "[]");
@@ -45,16 +48,68 @@
         try { localStorage.setItem(storageKey(), JSON.stringify(list)); return true; }
         catch (e) { return false; }
     }
+    function removeLocal(id) { storeAll(loadAll().filter(function (g) { return g.id !== id; })); }
+
+    // ----- the server copy (only for logged-in players) -----
+    // useServer(): true when I am logged in (auth.js shares QA.isLoggedIn)
+    function useServer() { return !!(window.QA && QA.isLoggedIn && QA.isLoggedIn()); }
+    var cache = [];                                     // my games as the server has them, newest first
+    var syncing = false;                                // true while an upload / download is running
+    function newestFirst(a, b) { return b.t - a.t; }
+
+    // sync(done): 1) upload every game still waiting in this browser, 2) download the list from the server.
+    // A game that cannot be uploaded right now (server asleep, no internet) stays in the browser and is tried again later.
+    function sync(done) {
+        if (!useServer() || syncing) { if (done) done(); return; }
+        syncing = true;
+        var waiting = loadAll().slice().reverse();      // oldest first, so the order is kept
+        function finish() { syncing = false; if (done) done(); }
+        function download() {
+            QA.call("hist_list", {}).then(function (res) {
+                if (res.ok) cache = res.games;
+                finish();
+            });
+        }
+        function next() {
+            if (!waiting.length) return download();
+            var g = waiting[0];
+            QA.call("hist_save", g).then(function (res) {
+                // saved - or the server says it can never be saved (bad data): either way take it out of the outbox
+                if (res.ok || res.error === "Bad game" || res.error === "Bad moves" || res.error === "Too large") {
+                    removeLocal(g.id);
+                    waiting.shift();
+                    next();
+                } else {
+                    finish();                           // not logged in / server unreachable: keep it for later
+                }
+            });
+        }
+        next();
+    }
+
+    // list(): everything to show. Logged in = the server's games + any not uploaded yet. Guest = this browser's games.
+    function list() {
+        var local = loadAll();
+        if (!useServer()) return local;
+        var seen = {}, out = [];
+        cache.concat(local).forEach(function (g) {
+            if (!seen[g.id]) { seen[g.id] = true; out.push(g); }
+        });
+        out.sort(newestFirst);
+        return out.slice(0, MAX_GAMES);
+    }
 
     // QHistory = the database + the replay controls (usable from the console too)
     var DB = window.QHistory = {
         encode: encode,
         decode: decode,
-        list: function () { return loadAll(); },        // all saved games, newest first
+        list: list,                                     // all saved games, newest first
+        sync: sync,
         get: function (id) {
-            return loadAll().filter(function (g) { return g.id === id; })[0] || null;
+            return list().filter(function (g) { return g.id === id; })[0] || null;
         },
         save: function (rec) {                          // add a game at the top of the list
+            // 1. always write it into this browser first, so it can never get lost
             var all = loadAll();
             all.unshift(rec);
             if (all.length > MAX_GAMES) all.length = MAX_GAMES;
@@ -62,13 +117,35 @@
                 all.length = Math.max(1, Math.floor(all.length / 2));
                 storeAll(all);
             }
+            // 2. logged in: show it at once and upload it to the server (this also removes it from the browser copy)
+            if (useServer()) {
+                cache.unshift(rec);
+                sync();
+            }
             return rec;
         },
         remove: function (id) {                         // delete one game
-            storeAll(loadAll().filter(function (g) { return g.id !== id; }));
+            removeLocal(id);
+            cache = cache.filter(function (g) { return g.id !== id; });
+            if (useServer()) QA.call("hist_delete", { id: id });
         },
-        clear: function () { storeAll([]); }            // delete all games
+        clear: function () {                            // delete all games
+            storeAll([]);
+            cache = [];
+            if (useServer()) QA.call("hist_clear", {});
+        }
     };
+
+    // right after logging in: upload the games saved earlier in this browser and load my list from the server
+    if (window.QA) {
+        var afterLoginBefore = QA.afterLogin;
+        QA.afterLogin = function (res) {
+            if (afterLoginBefore) afterLoginBefore(res);
+            sync();
+        };
+    }
+    // every minute: try again to upload games that could not be uploaded (server was asleep, no internet)
+    setInterval(function () { if (useServer() && loadAll().length) sync(); }, 60000);
 
 
     // ---------------------------------------------------------------
@@ -258,6 +335,10 @@
     // closeList() / openList(): the list of saved games
     function closeList() { panel.style.display = "none"; }
     function openList() {
+        renderList();
+        sync(function () { if (panel.style.display === "block" && !replay.active) renderList(); });   // refresh from the server
+    }
+    function renderList() {
         var all = DB.list();
         panel.innerHTML = "";
         panel.appendChild(el("h3", "Game history"));
@@ -272,14 +353,14 @@
             var watch = el("button", "watch");
             watch.onclick = function () { openReplay(rec.id); };
             var del2 = el("button", "delete");
-            del2.onclick = function () { DB.remove(rec.id); openList(); };
+            del2.onclick = function () { DB.remove(rec.id); renderList(); };
             row.appendChild(watch);
             row.appendChild(del2);
             panel.appendChild(row);
         });
         if (all.length) {
             var clr = el("button", "delete all");
-            clr.onclick = function () { DB.clear(); openList(); };
+            clr.onclick = function () { DB.clear(); renderList(); };
             panel.appendChild(clr);
         }
         var cl = el("button", "close");
