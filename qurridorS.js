@@ -17,11 +17,11 @@ var vsod = document.getElementById("vso")
 var ogskin = document.getElementsByClassName("playera")
 var settingsBtn = document.getElementById("settingsBtn");
 var settings = document.getElementById("settings");
-const WALL_H = "<button class='wallsbi' style='width:3.36vw;height:2.16vh'> </button>";
-const WALL_V = "<button class='wallsbh' style='width:1.2vw;height:6.05vh'> </button>";
-const WALL_H_MID_MARKER = "<button class='wallsbhx' style='width:1.2vw;height:2.16vh'> </button>";
-const WALL_V_MID_MARKER = "<button class='wallsbh' style='width:1.2vw;height:2.16vh'> </button>";
-const WALL_EMPTY_SLOT = "<button class='wall-tilesn' style='width:1.2vw;height:2.16vh'> </button>";
+const WALL_H = "<button class='wallsbi' style='width:56px;height:20px'> </button>";
+const WALL_V = "<button class='wallsbh' style='width:20px;height:56px'> </button>";
+const WALL_H_MID_MARKER = "<button class='wallsbhx' style='width:20px;height:20px'> </button>";
+const WALL_V_MID_MARKER = "<button class='wallsbh' style='width:20px;height:20px'> </button>";
+const WALL_EMPTY_SLOT = "<button class='wall-tilesn' style='width:20px;height:20px'> </button>";
 var drawgame = 1
 var hank = 0
 var ee = 0
@@ -149,7 +149,7 @@ function move(p) {
                 idnum = Number(idnum) - 20
                 arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 tor++
@@ -172,7 +172,7 @@ function move(p) {
                 idnum = Number(idnum) - 16
                 arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 tor++
@@ -195,7 +195,7 @@ function move(p) {
                 idnum = Number(idnum) + 20
                 arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 tor++
@@ -208,7 +208,7 @@ function move(p) {
                 idnum = Number(idnum) + 16
                 arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 tor++
@@ -219,7 +219,7 @@ function move(p) {
                     idnum = Number(idnum) - 36
                     arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     idsp = idc
                     tor++
@@ -242,7 +242,7 @@ function move(p) {
                     arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                     arrwb[0] = "<div class='textb' style='opacity:30%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     idsp = idc
                     tor++
@@ -252,7 +252,7 @@ function move(p) {
                 if (arr[fp][sp + 2] == P1_TILE()) {//p2 left two
                     idnum = Number(idnum) + 4
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     idsp = idc
                     arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
@@ -264,7 +264,7 @@ function move(p) {
                 if (arr[fp][sp - 2] == P1_TILE()) {//p2 right two
                     idnum = Number(idnum) - 4
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     idsp = idc
                     tor++
@@ -277,7 +277,7 @@ function move(p) {
                 arrwb[0] = "<div class='textb' style='opacity:30%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
                 idnum = Number(idnum) - 18
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 idnum = Number(idnum) - 4
@@ -296,7 +296,7 @@ function move(p) {
             if (psp == sp && pfp == fp + 2 && arr[pfp - 1][psp] != WALL_H) {//p2 up one
                 idnum = Number(idnum) + 18
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 tor++
@@ -307,7 +307,7 @@ function move(p) {
             if (psp == sp + 2 && pfp == fp && arr[pfp][psp - 1] != WALL_V) {//p2 left one
                 idnum = Number(idnum) + 2
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 tor++
@@ -319,7 +319,7 @@ function move(p) {
                 arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 idnum = Number(idnum) - 2
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 idsp = idc
                 tor++
@@ -334,7 +334,7 @@ function move(p) {
                 idnum = Number(idnum) - 20
                 arrwf[0] = "<div class='texta' style='opacity:30%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -347,7 +347,7 @@ function move(p) {
                 idnum = Number(idnum) - 16
                 arrwf[0] = "<div class='texta' style='opacity:30%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -359,7 +359,7 @@ function move(p) {
                 idnum = Number(idnum) + 20
                 arrwf[0] = "<div class='texta' style='opacity:30%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -382,7 +382,7 @@ function move(p) {
                 idnum = Number(idnum) + 16
                 arrwf[0] = "<div class='texta' style='opacity:30%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -405,7 +405,7 @@ function move(p) {
                     arrwb[0] = "<div class='textb' style='opacity:100%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
                     arrwf[0] = "<div class='texta' style='opacity:30%'> " + p1Name() + ": " + (walls).toString() + " </div>"
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     sidsp = idc
                     tor++
@@ -415,7 +415,7 @@ function move(p) {
                 if (arr[fp + 2][sp] == P2_TILE()) {
                     idnum = Number(idnum) + 36
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     sidsp = idc
                     tor++
@@ -438,7 +438,7 @@ function move(p) {
                     arrwb[0] = "<div class='textb' style='opacity:100%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
                     idnum = Number(idnum) + 4
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     sidsp = idc
                     tor++
@@ -450,7 +450,7 @@ function move(p) {
                     arrwb[0] = "<div class='textb' style='opacity:100%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
                     idnum = Number(idnum) - 4
                     tidsp = arr[pfp][psp]
-                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                    arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                     arr[fp][sp] = tidsp
                     sidsp = idc
                     tor++
@@ -461,7 +461,7 @@ function move(p) {
                 idnum = Number(idnum) - 18
                 arrwb[0] = "<div class='textb' style='opacity:100%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -471,7 +471,7 @@ function move(p) {
                 idnum = Number(idnum) + 18
                 arrwb[0] = "<div class='textb' style='opacity:100%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -491,7 +491,7 @@ function move(p) {
             if (psp == sp + 2 && pfp == fp && arr[pfp][psp - 1] != WALL_V) {//p1 left one
                 idnum = Number(idnum) + 2
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -501,7 +501,7 @@ function move(p) {
             if (psp == sp - 2 && pfp == fp && arr[pfp][psp + 1] != WALL_V) {//p1 right one
                 idnum = Number(idnum) - 2
                 tidsp = arr[pfp][psp]
-                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[pfp][psp] = "<button id='" + idnum.toString() + "' onclick='move(this)' class='player-tiles' style='width:56px;height:56px'> </button>";
                 arr[fp][sp] = tidsp
                 sidsp = idc
                 tor++
@@ -1024,13 +1024,13 @@ function BuildGame() {
     wallsb = 9
     arrwf[0] = "<div class='texta' style='opacity:100%'> " + p1Name() + ": 9 </div>"
     for (i = 1; i < 10; i++) {
-        arrwf[i] = "<button class='wallsa' style='width:6vw;height:1.08vh'> </button>"
+        arrwf[i] = "<button class='wallsa' style='width:100px;height:10px'> </button>"
         arrwf[i] += "</br> "
     }
     arrwb = new Array(1)
     arrwb[0] = "<div class='textb' style='opacity:30%'> " + p2Name() + ": 9 </div>"
     for (i = 1; i < 10; i++) {
-        arrwb[i] = "<button class='wallsb' style='width:6vw;height:1.08vh'> </button>"
+        arrwb[i] = "<button class='wallsb' style='width:100px;height:10px'> </button>"
         arrwb[i] += "</br> "
     }
     for (i = 0; i < arr.length; i++) {
@@ -1042,7 +1042,7 @@ function BuildGame() {
                     s = s + 2
                     idnum += 2
                 }
-                arr[i][s] = "<button id='" + idnum.toString() + "' onclick='move(this)'  class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";
+                arr[i][s] = "<button id='" + idnum.toString() + "' onclick='move(this)'  class='player-tiles' style='width:56px;height:56px'> </button>";
                 idnum += 2
             }
         }
@@ -1050,7 +1050,7 @@ function BuildGame() {
     idnum = 1;
     for (i = 0; i < arr.length; i = i + 2) {
         for (s = 1; s < arr[i].length; s = s + 2) {
-            arr[i][s] = "<button id='" + idnum.toString() + "' onclick='wallf(this)' class='wall-tilesa' style='width:1.2vw;height:6.05vh'> </button>";
+            arr[i][s] = "<button id='" + idnum.toString() + "' onclick='wallf(this)' class='wall-tilesa' style='width:20px;height:56px'> </button>";
             idnum++
             idnum++
         }
@@ -1068,7 +1068,7 @@ function BuildGame() {
                 arr[i][s] = WALL_EMPTY_SLOT;
             }
             else {
-                arr[i][s] = "<button id='" + idnum.toString() + "' onclick='wallf(this)' class='wall-tilesb' style='width:3.36vw;height:2.16vh'> </button>";
+                arr[i][s] = "<button id='" + idnum.toString() + "' onclick='wallf(this)' class='wall-tilesb' style='width:56px;height:20px'> </button>";
                 idnum++
                 idnum++
             }
@@ -1123,10 +1123,10 @@ function oppPawnClass() {
 function p1PawnClass() { return viewFlipped() ? oppPawnClass() : myPawnClass(); }
 function p2PawnClass() { return viewFlipped() ? myPawnClass() : oppPawnClass(); }
 function P1_TILE() {
-    return "<button id='152' class='" + p1PawnClass() + "' style='width:3.36vw;height:6.05vh'> </button>";
+    return "<button id='152' class='" + p1PawnClass() + "' style='width:56px;height:56px'> </button>";
 }
 function P2_TILE() {
-    return "<button id='8' class='" + p2PawnClass() + "' style='width:3.36vw;height:6.05vh'> </button>";
+    return "<button id='8' class='" + p2PawnClass() + "' style='width:56px;height:56px'> </button>";
 }
 // =====================================================================
 //  THE COMPUTER OPPONENT - HOW IT WORKS (read this first)
@@ -1785,11 +1785,11 @@ refreshNames();
 var startCss = document.createElement("style");
 startCss.textContent =
     "#qs-overlay{position:fixed;inset:0;z-index:9997;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;font-family:Verdana,sans-serif}" +
-    "#qs-box{background:#14532d;color:#fff;border-radius:1.2vw;box-shadow:0.72vw 0.86vh 0.12vw #000;padding:3.02vh 1.92vw;width:18vw;text-align:center}" +
-    "#qs-box h2{margin:0 0 1.94vh;color:#ff0}" +
-    "#qs-box button{margin:0.86vh 0.24vw 0;padding:1.08vh 1.32vw;border-radius:0.6vw;border:none;font-size:0.96vw;cursor:pointer;background:#fff;color:#14532d}" +
-    "#qs-side{margin-bottom:1.3vh}" +
-    "#qs-side button{padding:0.86vh 0.72vw;font-size:0.84vw}" +
+    "#qs-box{background:#14532d;color:#fff;border-radius:20px;box-shadow:12px 8px 2px #000;padding:28px 32px;width:300px;text-align:center}" +
+    "#qs-box h2{margin:0 0 18px;color:#ff0}" +
+    "#qs-box button{margin:8px 4px 0;padding:10px 22px;border-radius:10px;border:none;font-size:16px;cursor:pointer;background:#fff;color:#14532d}" +
+    "#qs-side{margin-bottom:12px}" +
+    "#qs-side button{padding:8px 12px;font-size:14px}" +
     "#qs-box button.qs-sel{background:#ff0}";
 document.head.appendChild(startCss);
 
