@@ -593,6 +593,21 @@
         <div class="turn">&#x21BB;</div>
         Turn your phone sideways to play
     </div>
+    <script>
+        // Zoom the whole page out when the screen is smaller than the size the game was drawn for (1680 x 945), so it all fits.
+        // It never zooms in past 100%.
+        function fitScreen() {
+            // On a phone innerWidth grows to fit the wide page, so use the real screen size from visualViewport when there is one.
+            var vv = window.visualViewport;
+            var w = vv ? vv.width * vv.scale : window.innerWidth;
+            var h = vv ? vv.height * vv.scale : window.innerHeight;
+            var z = Math.min(1, w / 1680, h / 945);
+            document.documentElement.style.zoom = z;
+        }
+        window.addEventListener("resize", fitScreen);
+        if (window.visualViewport) window.visualViewport.addEventListener("resize", fitScreen);
+        fitScreen();
+    </script>
     <script src="qurridorS.js"></script>
     <script src="auth.js"></script>
     <script src="online.js"></script>
