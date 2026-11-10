@@ -15,7 +15,7 @@
     // lastSaved : a text copy of what we last saved, so we only save when something changed
     // baseA/baseB: the win counters (wina/winb) the last time we looked, to spot a finished game
     // history   : the list of your last 10 games shown in the "history" popup
-    var loggedIn = false, lastSaved = "", baseA = 0, baseB = 0;
+    var loggedIn = false, lastSaved = "", baseA = 0, baseB = 0, history = [];
 
 
     // ---------------------------------------------------------------
@@ -24,7 +24,7 @@
     // ---------------------------------------------------------------
     function call(action, body) {
         // fetch = the browser's way of sending a request to the server
-        return fetch("/api?a=" + action, {          // e.g. "api?a=login"
+        return fetch(API + "?a=" + action, {          // e.g. "api?a=login"
             method: "POST",                           // we always send with POST
             credentials: "same-origin",               // include the login cookie
             headers: { "Content-Type": "application/json" },   // we are sending JSON text
@@ -80,6 +80,7 @@
 
         lastSaved = JSON.stringify(getState());   // remember this state so we don't re-save it
         baseA = wina; baseB = winb;               // remember the win counters as the starting point
+        history = d.games || [];                  // load the last-10-games list
     }
 
     // save(useBeacon): send the current state to the server, but only if it changed
@@ -107,17 +108,13 @@
     // GAME HISTORY: notice when a game ends
     // ---------------------------------------------------------------
 
-function record(result, winner) {
-    var online = window.QO && QO.active;
-    call("game", {
-        result: result, moves: tor,
-        p1: p1Name(), p2: p2Name(),
-        mode: online ? "online" : (iscomputerplaying ? "computer" : "2 players"),
-        level: (iscomputerplaying && !online) ? aiDepth : 0,
-        winner: winner,
-        log: QHistory.encode(gameLog)
-    });
-}
+    // record(result): tell the server "this game was a win/loss", and refresh the list
+    function record(result) {
+        call("game", { result: result, moves: tor }).then(function (res) {   // tor = number of turns played
+            if (res.ok) { history = res.games; renderHistory(); }            // server sends back the newest 10
+        });
+    }
+
     // Every 0.3 seconds, check if the game's win counters went up.
     // If they did, a game just finished.
     setInterval(function () {
@@ -139,21 +136,25 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
         // the dark full-screen background behind the login box (z-index = on top of everything)
         "#qa-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;font-family:Verdana,sans-serif}" +
         // the green login box itself
-        "#qa-box{background:#14532d;color:#fff;border-radius:20px;box-shadow:12px 8px 2px #000;padding:28px 32px;width:300px;text-align:center}" +
+        "#qa-box{background:#14532d;color:#fff;border-radius:1.2vw;box-shadow:0.72vw 0.86vh 0.12vw #000;padding:3.02vh 1.92vw;width:18vw;text-align:center}" +
         // the "Qurridor" heading in the box
-        "#qa-box h2{margin:0 0 14px;color:#ff0}" +
+        "#qa-box h2{margin:0 0 1.51vh;color:#ff0}" +
         // the username and password text fields
-        "#qa-box input{width:100%;box-sizing:border-box;margin:6px 0;padding:10px;border-radius:8px;border:none;font-size:16px}" +
+        "#qa-box input{width:100%;box-sizing:border-box;margin:0.65vh 0;padding:0.6vw;border-radius:0.48vw;border:none;font-size:0.96vw}" +
         // the Log in / Register / guest buttons
-        "#qa-box button{margin:8px 4px 0;padding:10px 16px;border-radius:10px;border:none;font-size:16px;cursor:pointer;background:#fff;color:#14532d}" +
+        "#qa-box button{margin:0.86vh 0.24vw 0;padding:1.08vh 0.96vw;border-radius:0.6vw;border:none;font-size:0.96vw;cursor:pointer;background:#fff;color:#14532d}" +
         // the red error message under the buttons
-        "#qa-msg{min-height:20px;margin-top:8px;color:#fca5a5;font-size:14px}" +
+        "#qa-msg{min-height:2.16vh;margin-top:0.86vh;color:#fca5a5;font-size:0.84vw}" +
         // the small white bar in the bottom-left corner
-        "#qa-bar{position:fixed;left:6px;bottom:6px;z-index:9998;background:#fff;border-radius:10px;padding:4px 10px;font:14px Verdana,sans-serif}" +
+        "#qa-bar{position:fixed;left:0.36vw;bottom:0.65vh;z-index:9998;background:#fff;border-radius:0.6vw;padding:0.43vh 0.6vw;font:0.84vw Verdana,sans-serif}" +
         // the buttons inside that bar (log out, history, online)
-        "#qa-bar button{margin-left:8px;cursor:pointer}" +
+        "#qa-bar button{margin-left:0.48vw;cursor:pointer}" +
+        // the history popup (hidden until you click "history")
+        "#qa-hist{position:fixed;left:0.36vw;bottom:4.75vh;z-index:9998;background:#fff;border-radius:0.6vw;padding:1.08vh 0.84vw;font:0.84vw Verdana,sans-serif;display:none;max-height:60vh;overflow:auto}" +
+        // WIN is green, LOSS is red
+        "#qa-hist .w{color:#15803d}#qa-hist .l{color:#b91c1c}" +
         // lets the player-name boxes grow wider so long usernames fit
-        ".texta,.textb,.textat,.textbt{width:auto!important;min-width:200px;padding:0 10px;box-sizing:border-box;white-space:nowrap}";
+        ".texta,.textb,.textat,.textbt{width:auto!important;min-width:12vw;padding:0 0.6vw;box-sizing:border-box;white-space:nowrap}";
     document.head.appendChild(css);               // put the CSS into the page
 
     // Build the login box (HTML text) and add it to the page, hidden at first
@@ -174,6 +175,24 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
     // msg(t): show a message (like an error) in the login box
     function msg(t) { $("qa-msg").textContent = t || ""; }
 
+    // Create the (empty, hidden) history popup
+    var hist = document.createElement("div");
+    hist.id = "qa-hist";
+    document.body.appendChild(hist);
+
+    // renderHistory(): fill the popup with your last 10 games
+    function renderHistory() {
+        var h = "<b>Last 10 games</b>";                          // the popup title
+        if (!history.length) h += "<div>No games yet</div>";     // nothing played yet
+        history.forEach(function (g) {                           // one line per game
+            var t = new Date(g.at).toLocaleString();             // the date/time in your local format
+            // WIN in green or LOSS in red, then the number of turns and the time
+            h += "<div><span class='" + (g.result == "win" ? "w'>WIN" : "l'>LOSS") + "</span> &middot; " +
+                 g.moves + " turns &middot; " + t + "</div>";
+        });
+        hist.innerHTML = h;                                      // put the text into the popup
+    }
+
     // showBar(text, canLogout): show the little bar at the bottom-left
     //   text      = what it says (e.g. "player: bob")
     //   canLogout = true for real accounts, false for guests
@@ -188,6 +207,15 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
             else location.reload();                                                   // guest: reload to see the login box again
         };
         bar.appendChild(b);
+        if (canLogout) {                                         // only real accounts have history
+            var hb = document.createElement("button");
+            hb.textContent = "history";
+            hb.onclick = function () {
+                renderHistory();                                                      // refresh the list
+                hist.style.display = hist.style.display == "block" ? "none" : "block";   // show/hide the popup
+            };
+            bar.appendChild(hb);
+        }
     }
 
 
