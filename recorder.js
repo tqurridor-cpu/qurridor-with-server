@@ -130,13 +130,13 @@
 
     // the html of an EMPTY pawn square / wall slot, built exactly like BuildGame() builds them
     function squareHtml(row, col) {
-        return "<button id='" + (9 * row + col) + "' onclick='move(this)'  class='player-tiles' style='width:3.36vw;height:6.05vh'> </button>";   // (two spaces, exactly as BuildGame writes it)
+        return "<button id='" + (9 * row + col) + "' onclick='move(this)'  class='player-tiles' style='width:56px;height:56px'> </button>";   // (two spaces, exactly as BuildGame writes it)
     }
     function slotH(row, col) {   // empty horizontal-wall slot (odd rows)
-        return "<button id='" + (row * 17 + col) + "' onclick='wallf(this)' class='wall-tilesb' style='width:3.36vw;height:2.16vh'> </button>";
+        return "<button id='" + (row * 17 + col) + "' onclick='wallf(this)' class='wall-tilesb' style='width:56px;height:20px'> </button>";
     }
     function slotV(row, col) {   // empty vertical-wall slot (even rows)
-        return "<button id='" + (row * 17 + col) + "' onclick='wallf(this)' class='wall-tilesa' style='width:1.2vw;height:6.05vh'> </button>";
+        return "<button id='" + (row * 17 + col) + "' onclick='wallf(this)' class='wall-tilesa' style='width:20px;height:56px'> </button>";
     }
 
     // entryOf(x): accept a log entry or its index
@@ -172,8 +172,8 @@
     }
     // giveWallBack(player): the reverse - one bar goes back on the stack and the counter goes up by 1
     function giveWallBack(player) {
-        if (player === 1) { walls++; arrwf[walls] = "<button class='wallsa' style='width:6vw;height:1.08vh'> </button></br> "; }
-        else { wallsb++; arrwb[wallsb] = "<button class='wallsb' style='width:6vw;height:1.08vh'> </button></br> "; }
+        if (player === 1) { walls++; arrwf[walls] = "<button class='wallsa' style='width:100px;height:10px'> </button></br> "; }
+        else { wallsb++; arrwb[wallsb] = "<button class='wallsb' style='width:100px;height:10px'> </button></br> "; }
     }
 
     // refreshAfterReplay(): update the name labels (whose turn it is = full colour) and redraw the board + stacks
