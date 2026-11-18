@@ -1335,61 +1335,68 @@ function generateMoves(grid, toMove, p1row, p1col, p2row, p2col, wallsLeft) {
     var oppRow = toMove === 1 ? p2row : p1row;   // ... and the opponent's position
     var oppCol = toMove === 1 ? p2col : p1col;
 
-    if (myRow < 16 && grid[myRow + 1][myCol] != WALL_H && grid[myRow + 2][myCol] != grid[oppRow][oppCol]) {   // STEP DOWN: not on the last row, no wall below me, and the square below is not the opponent's pawn
-        moves.push({ type: 'pawn', row: myRow + 2, col: myCol });
-    }
-    if (myCol < 16 && grid[myRow][myCol + 1] != WALL_V && grid[myRow][myCol + 2] != grid[oppRow][oppCol]) {   // STEP RIGHT (same checks)
-        moves.push({ type: 'pawn', row: myRow, col: myCol + 2 });
-    }
-    if (myCol > 0 && grid[myRow][myCol - 1] != WALL_V && grid[myRow][myCol - 2] != grid[oppRow][oppCol]) {   // STEP LEFT (same checks)
-        moves.push({ type: 'pawn', row: myRow, col: myCol - 2 });
-    }
-    if (myRow > 0 && grid[myRow - 1][myCol] != WALL_H && grid[myRow - 2][myCol] != grid[oppRow][oppCol]) {   // STEP UP (same checks)
-        moves.push({ type: 'pawn', row: myRow - 2, col: myCol });
-    }
+    // For each direction there are three mutually exclusive cases, so they are chained with else:
+    //   1) no opponent in that square        -> a plain STEP
+    //   2) opponent there, nothing behind him -> JUMP over him (lands 2 squares away)
+    //   3) opponent there, jump is blocked    -> DIAGONAL moves to the left/right of him
+    // (if the square is free there can be no opponent in it, so the jump and diagonal checks are skipped)
+    var oppCell = grid[oppRow][oppCol];   // what the opponent's pawn looks like in the grid
 
-    if (myCol < 14 && grid[myRow][myCol + 1] != WALL_V && grid[myRow][myCol + 3] != WALL_V && grid[myRow][myCol + 2] == grid[oppRow][oppCol]) {   // JUMP RIGHT over the opponent: they stand right next to me and there is no wall before or behind them (jump lands 2 squares away)
-        moves.push({ type: 'pawn', row: myRow, col: myCol + 4 });
+    if (myRow < 16 && grid[myRow + 1][myCol] != WALL_H) {   // DOWN: not on the last row and no wall below me
+        if (grid[myRow + 2][myCol] != oppCell) {   // the square below is free -> step down
+            moves.push({ type: 'pawn', row: myRow + 2, col: myCol });
+        } else if (myRow < 14 && grid[myRow + 3][myCol] != WALL_H) {   // the opponent is below me and there is no wall / edge behind him -> jump over him
+            moves.push({ type: 'pawn', row: myRow + 4, col: myCol });
+        } else {   // the opponent is below me and the jump is blocked -> go diagonally around him
+            if (myCol < 16 && grid[myRow + 2][myCol + 1] != WALL_V) {
+                moves.push({ type: 'pawn', row: myRow + 2, col: myCol + 2 });   // down-right
+            }
+            if (myCol > 0 && grid[myRow + 2][myCol - 1] != WALL_V) {
+                moves.push({ type: 'pawn', row: myRow + 2, col: myCol - 2 });   // down-left
+            }
+        }
     }
-    if (myCol > 2 && grid[myRow][myCol - 1] != WALL_V && grid[myRow][myCol - 3] != WALL_V && grid[myRow][myCol - 2] == grid[oppRow][oppCol]) {   // JUMP LEFT over the opponent
-        moves.push({ type: 'pawn', row: myRow, col: myCol - 4 });
+    if (myCol < 16 && grid[myRow][myCol + 1] != WALL_V) {   // RIGHT: not on the last column and no wall to my right
+        if (grid[myRow][myCol + 2] != oppCell) {   // the square on the right is free -> step right
+            moves.push({ type: 'pawn', row: myRow, col: myCol + 2 });
+        } else if (myCol < 14 && grid[myRow][myCol + 3] != WALL_V) {   // opponent on the right, nothing behind him -> jump over him
+            moves.push({ type: 'pawn', row: myRow, col: myCol + 4 });
+        } else {   // opponent on the right and the jump is blocked -> diagonals
+            if (myRow > 0 && grid[myRow - 1][myCol + 2] != WALL_H) {
+                moves.push({ type: 'pawn', row: myRow - 2, col: myCol + 2 });   // up-right
+            }
+            if (myRow < 16 && grid[myRow + 1][myCol + 2] != WALL_H) {
+                moves.push({ type: 'pawn', row: myRow + 2, col: myCol + 2 });   // down-right
+            }
+        }
     }
-    if (myRow < 14 && grid[myRow + 1][myCol] != WALL_H && grid[myRow + 3][myCol] != WALL_H && grid[myRow + 2][myCol] == grid[oppRow][oppCol]) {   // JUMP DOWN over the opponent
-        moves.push({ type: 'pawn', row: myRow + 4, col: myCol });
+    if (myCol > 0 && grid[myRow][myCol - 1] != WALL_V) {   // LEFT: not on the first column and no wall to my left
+        if (grid[myRow][myCol - 2] != oppCell) {   // the square on the left is free -> step left
+            moves.push({ type: 'pawn', row: myRow, col: myCol - 2 });
+        } else if (myCol > 2 && grid[myRow][myCol - 3] != WALL_V) {   // opponent on the left, nothing behind him -> jump over him
+            moves.push({ type: 'pawn', row: myRow, col: myCol - 4 });
+        } else {   // opponent on the left and the jump is blocked -> diagonals
+            if (myRow < 16 && grid[myRow + 1][myCol - 2] != WALL_H) {
+                moves.push({ type: 'pawn', row: myRow + 2, col: myCol - 2 });   // down-left
+            }
+            if (myRow > 0 && grid[myRow - 1][myCol - 2] != WALL_H) {
+                moves.push({ type: 'pawn', row: myRow - 2, col: myCol - 2 });   // up-left
+            }
+        }
     }
-    if (myRow > 2 && grid[myRow - 1][myCol] != WALL_H && grid[myRow - 3][myCol] != WALL_H && grid[myRow - 2][myCol] == grid[oppRow][oppCol]) {   // JUMP UP over the opponent
-        moves.push({ type: 'pawn', row: myRow - 4, col: myCol });
-    }
-
-    // DIAGONAL moves: allowed only when the opponent is right next to me AND the straight jump is blocked
-    // (by a wall behind them or by the edge of the board). There are four: up-right, down-right, down-left, up-left.
-    if (myRow > 0 && myCol < 16 &&
-        ((grid[myRow - 1][myCol] != WALL_H && (myRow == 2 || grid[myRow - 3][myCol] == WALL_H) &&
-            grid[myRow - 2][myCol + 1] != WALL_V && (grid[myRow - 2][myCol] == grid[oppRow][oppCol])) ||
-            (grid[myRow][myCol + 1] != WALL_V && (myCol == 14 || grid[myRow][myCol + 3] == WALL_V) &&
-                grid[myRow - 1][myCol + 2] != WALL_H && (grid[myRow][myCol + 2] == grid[oppRow][oppCol])))) {
-        moves.push({ type: 'pawn', row: myRow - 2, col: myCol + 2 });   // up-right
-    }
-    if (myRow < 16 && myCol < 16 &&
-        ((grid[myRow + 1][myCol] != WALL_H && (myRow == 14 || grid[myRow + 3][myCol] == WALL_H) &&
-            grid[myRow + 2][myCol + 1] != WALL_V && (grid[myRow + 2][myCol] == grid[oppRow][oppCol])) ||
-            (grid[myRow][myCol + 1] != WALL_V && (myCol == 14 || grid[myRow][myCol + 3] == WALL_V) &&
-                grid[myRow + 1][myCol + 2] != WALL_H && (grid[myRow][myCol + 2] == grid[oppRow][oppCol])))) {
-        moves.push({ type: 'pawn', row: myRow + 2, col: myCol + 2 });   // down-right
-    }
-    if (myRow < 16 && myCol > 0 &&
-        ((grid[myRow + 1][myCol] != WALL_H && (myRow == 14 || grid[myRow + 3][myCol] == WALL_H) &&
-            grid[myRow + 2][myCol - 1] != WALL_V && (grid[myRow + 2][myCol] == grid[oppRow][oppCol])) ||
-            (grid[myRow][myCol - 1] != WALL_V && (myCol == 2 || grid[myRow][myCol - 3] == WALL_V) &&
-                grid[myRow + 1][myCol - 2] != WALL_H && (grid[myRow][myCol - 2] == grid[oppRow][oppCol])))) {
-        moves.push({ type: 'pawn', row: myRow + 2, col: myCol - 2 });   // down-left
-    }
-    if (myRow > 0 && myCol > 0 &&
-        ((grid[myRow - 1][myCol] != WALL_H && (myRow == 2 || grid[myRow - 3][myCol] == WALL_H) &&
-            grid[myRow - 2][myCol - 1] != WALL_V && (grid[myRow - 2][myCol] == grid[oppRow][oppCol])) ||
-            (grid[myRow][myCol - 1] != WALL_V && (myCol == 2 || grid[myRow][myCol - 3] == WALL_V) &&
-                grid[myRow - 1][myCol - 2] != WALL_H && (grid[myRow][myCol - 2] == grid[oppRow][oppCol])))) {
-        moves.push({ type: 'pawn', row: myRow - 2, col: myCol - 2 });   // up-left
+    if (myRow > 0 && grid[myRow - 1][myCol] != WALL_H) {   // UP: not on the first row and no wall above me
+        if (grid[myRow - 2][myCol] != oppCell) {   // the square above is free -> step up
+            moves.push({ type: 'pawn', row: myRow - 2, col: myCol });
+        } else if (myRow > 2 && grid[myRow - 3][myCol] != WALL_H) {   // opponent above me, nothing behind him -> jump over him
+            moves.push({ type: 'pawn', row: myRow - 4, col: myCol });
+        } else {   // opponent above me and the jump is blocked -> diagonals
+            if (myCol < 16 && grid[myRow - 2][myCol + 1] != WALL_V) {
+                moves.push({ type: 'pawn', row: myRow - 2, col: myCol + 2 });   // up-right
+            }
+            if (myCol > 0 && grid[myRow - 2][myCol - 1] != WALL_V) {
+                moves.push({ type: 'pawn', row: myRow - 2, col: myCol - 2 });   // up-left
+            }
+        }
     }
 
     if (wallsLeft > 0) {   // WALLS: only if this player still has walls to place
@@ -1976,7 +1983,10 @@ function flipBoard(on) {
     var box = games.getBoundingClientRect();
     if (tiles.length && box.height > 0) {
         var first = tiles[0].getBoundingClientRect(), last = tiles[tiles.length - 1].getBoundingClientRect();
-        games.style.transformOrigin = "50% " + (((first.top + last.bottom) / 2) - box.top) + "px";
+        // getBoundingClientRect() is measured AFTER the page zoom (fitScreen in index.html) but transform-origin is set BEFORE it,
+        // so divide by the zoom, otherwise the board turns around the wrong point and slides up off the screen.
+        var zoom = parseFloat(document.documentElement.style.zoom) || 1;
+        games.style.transformOrigin = "50% " + ((((first.top + last.bottom) / 2) - box.top) / zoom) + "px";
     }
     games.setAttribute("data-flip", "1");
 }
