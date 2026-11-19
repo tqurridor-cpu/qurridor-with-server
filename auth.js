@@ -146,6 +146,7 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
         // the red error message under the buttons
         "#qa-msg{min-height:20px;margin-top:8px;color:#fca5a5;font-size:14px}" +
         // the small white bar in the bottom-left corner
+        "html.qa-ingame #qa-bar,html.qa-ingame #qa-hist{display:none !important}" +   // hidden while a game is on screen
         "#qa-bar{position:fixed;left:6px;bottom:6px;z-index:9998;background:#fff;border-radius:10px;padding:4px 10px;font:14px Verdana,sans-serif}" +
         // the buttons inside that bar (log out, history, online)
         "#qa-bar button{margin-left:8px;cursor:pointer}" +
@@ -192,6 +193,14 @@ if (wina > baseA) { baseA = wina; baseB = winb; record(guestSide ? "loss" : "win
         });
         hist.innerHTML = h;                                      // put the text into the popup
     }
+
+    // While a game is on the screen (the board #s has the class "game" and is shown) hide the bottom-left bar
+    // (player name, log out, history, online). The CSS rule for html.qa-ingame is in the style text above.
+    setInterval(function () {
+        var s = document.getElementById("s");
+        var inGame = !!s && s.classList.contains("game") && s.style.display !== "none";
+        document.documentElement.classList.toggle("qa-ingame", inGame);
+    }, 200);
 
     // showBar(text, canLogout): show the little bar at the bottom-left
     //   text      = what it says (e.g. "player: bob")
