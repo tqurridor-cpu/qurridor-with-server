@@ -1160,7 +1160,7 @@ var mySide = 0;            // vs computer: 0 = I'm player 1, 1 = I'm player 2
 // computerSide(): which player the computer controls (1 or 2).
 // If I chose to play second, the computer is player 1; otherwise it is player 2.
 function computerSide() { return mySide === 1 ? 1 : 2; }   // which player the computer is
-var aiDepth = 3; // default difficulty, used by runComputerTurn instead of a hardcoded 3
+var aiDepth = 4; // default difficulty, used by runComputerTurn instead of a hardcoded 3
 
 // toggleSettings(): the gear button - show / hide the settings box (mode + difficulty).
 function toggleSettings() {
