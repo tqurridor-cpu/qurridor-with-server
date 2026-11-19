@@ -349,6 +349,28 @@
             font-size: 20px;
         }
 
+        /* The whole game screen (board, resign button, names, wall stacks, coin counters) sits this much lower.
+           Change --drop to move it up or down. */
+        :root {
+            --drop: 70px;
+        }
+
+        #s.game {
+            margin-top: var(--drop);
+        }
+
+        #resign {
+            margin-top: calc(20px + var(--drop));
+        }
+
+        #scorea, #scoreb {
+            margin-top: calc(20px + var(--drop));
+        }
+
+        #tilea, #tileb {
+            top: calc(50px + var(--drop));
+        }
+
         .game {
             border: none;
             margin-left: 520px;
@@ -585,7 +607,7 @@
             <select id="difficultySelect" onchange="setDifficulty(this.value)">
                 <option value="2">Easy</option>
                 <option value="4" selected>Medium</option>
-                <option value="6">Hard</option>
+                <option value="5">Hard</option>
             </select>
         </div>
     </div>
@@ -594,14 +616,14 @@
         Turn your phone sideways to play
     </div>
     <script>
-        // Zoom the whole page out when the screen is smaller than the size the game was drawn for (1680 x 945), so it all fits.
+        // Zoom the whole page out when the screen is smaller than the size the game was drawn for (1680 x 1070), so it all fits.
         // It never zooms in past 100%.
         function fitScreen() {
             // On a phone innerWidth grows to fit the wide page, so use the real screen size from visualViewport when there is one.
             var vv = window.visualViewport;
             var w = vv ? vv.width * vv.scale : window.innerWidth;
             var h = vv ? vv.height * vv.scale : window.innerHeight;
-            var z = Math.min(1, w / 1680, h / 945);
+            var z = Math.min(1, w / 1680, h / 1070);
             document.documentElement.style.zoom = z;
         }
         window.addEventListener("resize", fitScreen);
