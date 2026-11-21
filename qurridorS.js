@@ -1280,8 +1280,8 @@ function evaluatePositionGrid(grid, p1row, p1col, p2row, p2col, wallsP1Left, wal
     if (p1Dist === 0) return 9999;   // player 1 is on the goal row -> player 1 won
     if (p2Dist === 0) return -9999;   // player 2 is on the goal row -> player 2 won
     var score = p2Dist - p1Dist;   // being closer to the goal than the opponent is good
-    score += (wallsP1Left - wallsP2Left) * 1.5;   // having more walls left than the opponent is good (each wall is worth 1.5)
-    if(aiDepth % 2 == 1) score += 1.5   // odd search depths end on the other player's move, so this evens things out (your tweak)
+    score += (wallsP1Left - wallsP2Left) * 1;   // having more walls left than the opponent is good (each wall is worth 1.5)
+    if(aiDepth % 2 == 1) score += 1   // odd search depths end on the other player's move, so this evens things out (your tweak)
 
     return score;
 }
@@ -1434,7 +1434,7 @@ function applyMove(grid, move, toMove, p1row, p1col, p2row, p2col) {
 }
 
 // Bonus for a pawn move that follows a shortest path to the goal (0.5 in the mover's favour).
-var SHORTEST_PATH_BONUS = 1.5;
+var SHORTEST_PATH_BONUS = 1;
 
 // True if this is a pawn move that walks along a shortest path: the squares it gains on the goal
 // equal the squares it travels (1 for a step, 2 for a jump over the other pawn or a diagonal).
