@@ -496,7 +496,10 @@ function move(p) {
                 arrwb[0] = "<div class='textb' style='opacity:100%'> " + p2Name() + ": " + (wallsb).toString() + " </div>"
             }
         }
+        if (aidepth == 2)
         runComputerTurn(600)
+        else
+            runComputerTurn(0)
         var text = "";
         games.innerHTML = boardHtml();
         text = "";
