@@ -280,6 +280,8 @@
         "#qh-panel button,#qh-bar button{margin:6px 4px 0;padding:7px 14px;border-radius:10px;border:none;font-size:15px;cursor:pointer;background:#fff;color:#14532d}" +
         "#qh-bar button:disabled{opacity:.4;cursor:default}" +
         // the replay bar at the top of the screen
+        "#qh-eval{height:10px;background:#1d4ed8;border-radius:5px;overflow:hidden;margin:2px 0 8px}" +   // evaluation bar: blue = player 2 ...
+        "#qh-eval div{height:100%;width:50%;background:#dc2626}" +                                          // ... red = player 1 (same colours as the names)
         "#qh-bar{position:fixed;top:560px;left:930px;width:260px;text-align:center;z-index:9997;background:#fff;color:#14532d;border-radius:10px;padding:5px 12px;font:15px Verdana,sans-serif;display:none}";
     document.head.appendChild(css);
 
@@ -310,12 +312,60 @@
     backBtn.onclick = back;
     fwdBtn.onclick = forward;
     closeBtn.onclick = closeReplay;
+        var evalText = el("span");                 // "evaluation (depth 4): +2.5 for tom"
+    var evalBar = el("div");                   // thin bar: the red part is player 1's share, the blue part player 2's
+    evalBar.id = "qh-eval";
+    var evalFill = el("div");
+    evalBar.appendChild(evalFill);
     bar.appendChild(label);      // the text first, then the buttons under it (the bar is a small box on the right of the board)
+    bar.appendChild(evalText);
+    bar.appendChild(evalBar);
     bar.appendChild(backBtn);
     bar.appendChild(fwdBtn);
     bar.appendChild(closeBtn);
     document.body.appendChild(bar);
+        // ===================== evaluation of the position (minimax, depth 4) =====================
+    var EVAL_DEPTH = 4;      // how many moves ahead the computer looks
+    var evalToken = 0;       // numbers the requests, so an old answer never overwrites a newer step
 
+    // evalPosition(): runs the computer's minimax on the board that is on the screen right now and returns the score
+    // from PLAYER 1's point of view (positive = player 1 is better, negative = player 2 is better,
+    // +-9999 or more = somebody wins by force within the search depth). The board itself is not touched: minimax works on a copy.
+    function evalPosition() {
+        var grid = cloneGrid(arr);                              // copy of the real board (from qurridorS.js)
+        var p1row = Math.floor(sidsp / 18) * 2, p1col = sidsp % 18;   // the pawn ids hold the positions (same maths as computerMove)
+        var p2row = Math.floor(idsp / 18) * 2, p2col = idsp % 18;
+        var toMove = (tor % 2 === 0) ? 1 : 2;                   // tor even = player 1's turn
+        var savedDepth = aiDepth;
+        aiDepth = EVAL_DEPTH;                                   // evaluatePositionGrid() looks at aiDepth (odd/even tweak), so set it for the search
+        try {
+            return minimax(grid, p1row, p1col, p2row, p2col, walls, wallsb, EVAL_DEPTH, -Infinity, Infinity, toMove).score;
+        } finally {
+            aiDepth = savedDepth;                               // always put the difficulty back
+        }
+    }
+    DB.evaluate = evalPosition;
+
+    // showEval(): work out the evaluation of the current step and show it as text + bar.
+    // It waits a moment first so the board and the step text appear straight away (the search can take a second or two).
+    function showEval() {
+        var token = ++evalToken;
+        evalText.textContent = "evaluation (depth " + EVAL_DEPTH + "): ...";
+        setTimeout(function () {
+            if (token !== evalToken || !replay.active) return;          // the person already moved to another step (or closed the replay)
+            var score = evalPosition(), pct, text;
+            var p1 = replay.rec.p1 || "player1", p2 = replay.rec.p2 || "player2";
+            if (score >= 9000) { pct = 100; text = p1 + " wins"; }
+            else if (score <= -9000) { pct = 0; text = p2 + " wins"; }
+            else {
+                pct = 50 + 50 * Math.tanh(score / 8);                   // squeeze any score into 0..100 for the bar
+                var shown = Math.round(score * 10) / 10;
+                text = shown === 0 ? "equal" : (shown > 0 ? "+" + shown + " for " + p1 : "+" + (-shown) + " for " + p2);
+            }
+            evalText.textContent = "evaluation (depth " + EVAL_DEPTH + "): " + text;
+            evalFill.style.width = pct + "%";
+        }, 30);
+    }
     // updateBar(): refresh the text and switch the buttons off at the start / end
     function updateBar() {
         var n = replay.log.length;
@@ -329,6 +379,7 @@
         label.textContent = text;
         backBtn.disabled = replay.pos === 0;
         fwdBtn.disabled = replay.pos === n;
+         showEval();                                  // the evaluation of this position
     }
 
     // closeList() / openList(): the list of saved games
