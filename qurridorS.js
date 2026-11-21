@@ -102,20 +102,7 @@ function game() {
             del.style.display = "none"
         }
         var text = "";
-        for (i = 0; i < arrrows; i++) {
-            if (i % 2 == 0) {
-                for (s = 0; s < arr[i].length; s++) {
-                    text += arr[i][s]
-                }
-            }
-            else {
-                for (s = 0; s < arr[i].length; s++) {
-                    text += arr[i][s]
-                }
-            }
-            text += "</br> "
-        }
-        games.innerHTML = text
+        games.innerHTML = boardHtml();
         text = "";
         for (i = 0; i < 10; i++) {
             text += arrwf[i]
@@ -511,13 +498,7 @@ function move(p) {
         }
         runComputerTurn(600)
         var text = "";
-        for (i = 0; i < arrrows; i++) {
-            for (s = 0; s < arr[i].length; s++) {
-                text += arr[i][s]
-            }
-            text += "</br> "
-        }
-        games.innerHTML = text
+        games.innerHTML = boardHtml();
         text = "";
         for (i = 0; i < 10; i++) {
             text += arrwf[i]
@@ -606,13 +587,7 @@ function wallf(wl) {
             }
             runComputerTurn(600)
             var text = "";
-            for (i = 0; i < arrrows; i++) {
-                for (s = 0; s < arr[i].length; s++) {
-                    text += arr[i][s]
-                }
-                text += "</br> "
-            }
-            games.innerHTML = text
+            games.innerHTML = boardHtml();
             text = "";
             for (i = 0; i < 10; i++) {
                 text += arrwf[i]
@@ -681,13 +656,7 @@ function wallf(wl) {
                     allow = 0
                 }
                 var text = "";
-                for (i = 0; i < arrrows; i++) {
-                    for (s = 0; s < arr[i].length; s++) {
-                        text += arr[i][s]
-                    }
-                    text += "</br> "
-                }
-                games.innerHTML = text
+                games.innerHTML = boardHtml();
                 text = "";
                 for (i = 0; i < 10; i++) {
                     text += arrwf[i]
@@ -1077,20 +1046,7 @@ function BuildGame() {
     arr[0][8] = P2_TILE();
     if (drawgame == 1) {
         var text = "";
-        for (i = 0; i < arrrows; i++) {
-            if (i % 2 == 0) {
-                for (s = 0; s < arr[i].length; s++) {
-                    text += arr[i][s]
-                }
-            }
-            else {
-                for (s = 0; s < arr[i].length; s++) {
-                    text += arr[i][s]
-                }
-            }
-            text += "</br> "
-        }
-        games.innerHTML = text
+        games.innerHTML = boardHtml();
         text = "";
         for (i = 0; i < 10; i++) {
             text += arrwf[i]
@@ -1103,6 +1059,15 @@ function BuildGame() {
         document.getElementById("tileb").innerHTML = text
 
     }
+}
+// boardHtml(): the whole board as html. arr holds one button per cell (17 x 17); they go into one grid
+// (class "board", see index.html), row after row, so no line breaks are needed.
+function boardHtml() {
+    var out = "<div class='board'>", r, c;
+    for (r = 0; r < arrrows; r++) {
+        for (c = 0; c < arr[r].length; c++) out += arr[r][c];
+    }
+    return out + "</div>";
 }
 function inBounds(r, c) {
     return r >= 0 && r <= 16 && c >= 0 && c <= 16;
@@ -1160,7 +1125,7 @@ var mySide = 0;            // vs computer: 0 = I'm player 1, 1 = I'm player 2
 // computerSide(): which player the computer controls (1 or 2).
 // If I chose to play second, the computer is player 1; otherwise it is player 2.
 function computerSide() { return mySide === 1 ? 1 : 2; }   // which player the computer is
-var aiDepth = 4; // default difficulty, used by runComputerTurn instead of a hardcoded 3
+var aiDepth = 3; // default difficulty, used by runComputerTurn instead of a hardcoded 3
 
 // toggleSettings(): the gear button - show / hide the settings box (mode + difficulty).
 function toggleSettings() {
@@ -1742,13 +1707,7 @@ function runComputerTurn(delay) {
         }
 
         var text = "";
-        for (i = 0; i < arrrows; i++) {
-            for (s = 0; s < arr[i].length; s++) {
-                text += arr[i][s];
-            }
-            text += "</br> ";
-        }
-        games.innerHTML = text;   // redraw the board from the grid ...
+        games.innerHTML = boardHtml();   // redraw the board from the grid ...
 
         text = "";
         for (i = 0; i < 10; i++) { text += arrwf[i]; }
@@ -1974,21 +1933,13 @@ game = function () {
 // Turn the board upside down (on = true) or back the right way up (on = false).
 // It uses an attribute, not a class, because BMM2 compares games.classList to "game".
 function flipBoard(on) {
+    document.documentElement.classList.remove("flipped");
     games.removeAttribute("data-flip");
     games.style.transformOrigin = "";
     if (!on) return;
-    // The frame is a few pixels taller than the squares, so rotate around the middle of the SQUARES
-    // (measured while the board is still the right way up) and the flipped board lines up with the normal one.
-    var tiles = games.querySelectorAll("button");
-    var box = games.getBoundingClientRect();
-    if (tiles.length && box.height > 0) {
-        var first = tiles[0].getBoundingClientRect(), last = tiles[tiles.length - 1].getBoundingClientRect();
-        // getBoundingClientRect() is measured AFTER the page zoom (fitScreen in index.html) but transform-origin is set BEFORE it,
-        // so divide by the zoom, otherwise the board turns around the wrong point and slides up off the screen.
-        var zoom = parseFloat(document.documentElement.style.zoom) || 1;
-        games.style.transformOrigin = "50% " + ((((first.top + last.bottom) / 2) - box.top) / zoom) + "px";
-    }
+    // the board is an exact square, so the default turning point (its middle) is right
     games.setAttribute("data-flip", "1");
+    document.documentElement.classList.add("flipped");   // the wall rows swap places (see index.html)
 }
 
 // ===================== flipped board (when I play second) =====================
