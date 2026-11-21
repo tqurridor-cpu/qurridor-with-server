@@ -8,7 +8,7 @@
 //
 //   1. a small "database" of finished games (server database for accounts, this browser for guests)
 //   2. a "history" button on the main menu that lists the saved games
-//   3. a replay bar with a  back  and a  forward  button (and the left / right arrow keys)
+//   3. a replay bar (to the right of the board) with a  back  and a  forward  button (and the left / right arrow keys)
 // =====================================================================
 (function () {
 
@@ -276,10 +276,11 @@
         "#qh-panel h3{margin:0 0 12px;color:#ff0}" +
         ".qh-row{background:rgba(0,0,0,.25);border-radius:10px;padding:8px 10px;margin:8px 0;text-align:left}" +
         ".qh-small{font-size:12px;opacity:.85}" +
+        "#qh-bar span{display:block;margin-bottom:6px}" +
         "#qh-panel button,#qh-bar button{margin:6px 4px 0;padding:7px 14px;border-radius:10px;border:none;font-size:15px;cursor:pointer;background:#fff;color:#14532d}" +
         "#qh-bar button:disabled{opacity:.4;cursor:default}" +
         // the replay bar at the top of the screen
-        "#qh-bar{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:9997;background:#fff;color:#14532d;border-radius:10px;padding:5px 12px;font:15px Verdana,sans-serif;display:none;white-space:nowrap}";
+        "#qh-bar{position:fixed;top:560px;left:930px;width:260px;text-align:center;z-index:9997;background:#fff;color:#14532d;border-radius:10px;padding:5px 12px;font:15px Verdana,sans-serif;display:none}";
     document.head.appendChild(css);
 
     // make an element with some text
@@ -309,10 +310,8 @@
     backBtn.onclick = back;
     fwdBtn.onclick = forward;
     closeBtn.onclick = closeReplay;
+    bar.appendChild(label);      // the text first, then the buttons under it (the bar is a small box on the right of the board)
     bar.appendChild(backBtn);
-    bar.appendChild(el("span", " "));
-    bar.appendChild(label);
-    bar.appendChild(el("span", " "));
     bar.appendChild(fwdBtn);
     bar.appendChild(closeBtn);
     document.body.appendChild(bar);
