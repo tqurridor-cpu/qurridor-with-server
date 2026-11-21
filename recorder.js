@@ -180,12 +180,8 @@
     function refreshAfterReplay() {
         arrwf[0] = "<div class='texta' style='opacity:" + (tor % 2 === 0 ? "100%" : "30%") + "'> " + p1Name() + ": " + walls + " </div>";
         arrwb[0] = "<div class='textb' style='opacity:" + (tor % 2 === 1 ? "100%" : "30%") + "'> " + p2Name() + ": " + wallsb + " </div>";
-        var text = "", r, c, k;
-        for (r = 0; r < arrrows; r++) {
-            for (c = 0; c < arr[r].length; c++) text += arr[r][c];
-            text += "</br> ";
-        }
-        games.innerHTML = text;
+        var text, k;
+        games.innerHTML = boardHtml();
         text = ""; for (k = 0; k < 10; k++) text += arrwf[k];
         document.getElementById("tilea").innerHTML = text;
         text = ""; for (k = 0; k < 10; k++) text += arrwb[k];
