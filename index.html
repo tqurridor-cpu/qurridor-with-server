@@ -6,7 +6,7 @@
             z-index: 1000;
             position: absolute;
             margin-top: 150px;
-            margin-left: 500px;
+            margin-left: 160px;
             background-color: rgba(0,0,0,0.4);
             font-size: 45px;
             width: 600px;
@@ -276,7 +276,7 @@
             opacity: 100%;
             position: absolute;
             margin-top: 150px;
-            margin-left: 500px;
+            margin-left: 160px;
             background-image: url(backroundforhtml.jpg);
             font-size: 45px;
             width: 600px;
@@ -327,7 +327,7 @@
             opacity: 0.7;
             background-color: #5f4b8bff;
             border: solid purple;
-            border-width: 6px 6px; 
+            border-width: 6px 6px;
         }
 
         .wall-tilesn {
@@ -349,41 +349,132 @@
             font-size: 20px;
         }
 
-        /* The whole game screen (board, resign button, names, wall stacks, coin counters) sits this much lower.
-           Change --drop to move it up or down. */
+        /* ============ GAME SCREEN LAYOUT ============
+           Board on the left (800 x 800), player 2's walls above it, player 1's walls below it, resign button on the right.
+           When you play second the board is turned around, so the two wall rows swap (class "flipped" on <html>, set by flipBoard()).
+           Every game element is placed with top:0; left:0 plus a margin, so the margins are exact positions on the page. */
         :root {
-            --drop: 70px;
+            --t: 72px; /* width and height of one square   (fitScreen() sets this to a whole number of screen pixels) */
+            --g: 19px; /* width / height of one wall gap   (same) */
+        }
+
+        #s.game, #resign, #scorea, #scoreb, #tilea, #tileb {
+            position: absolute; /* (the board's class "game" replaces "uwin", so it has to say this itself) */
+            top: 0;
+            left: 0;
         }
 
         #s.game {
-            margin-top: var(--drop);
+            margin: 100px 0 0 60px;
+        }
+        /* the board: 9 squares + 8 gaps = 800 x 800 */
+        #tileb {
+            margin: 20px 0 0 60px;
+        }
+        /* player 2: name + wall bars, above the board */
+        #tilea {
+            margin: 914px 0 0 60px;
+        }
+        /* player 1: name + wall bars, below the board */
+        #scoreb {
+            margin: 28px 0 0 290px;
+        }
+        /* the win counters sit next to the names */
+        #scorea {
+            margin: 922px 0 0 290px;
         }
 
         #resign {
-            margin-top: calc(20px + var(--drop));
+            margin: 350px 0 0 940px;
+        }
+        /* resign button: right of the board */
+
+        html.flipped #tilea {
+            margin-top: 20px;
+        }
+        /* board turned around -> player 1 is at the top */
+        html.flipped #tileb {
+            margin-top: 914px;
         }
 
-        #scorea, #scoreb {
-            margin-top: calc(20px + var(--drop));
+        html.flipped #scorea {
+            margin-top: 28px;
         }
 
+        html.flipped #scoreb {
+            margin-top: 922px;
+        }
+
+        /* the name + wall bars are laid out in a row: name on the first line, the bars (up to 9) on the second */
         #tilea, #tileb {
-            top: calc(50px + var(--drop));
+            width: 800px;
+            font-size: 0; /* no gaps from spaces between the bars */
         }
 
-        .game {
-            border: none;
-            margin-left: 520px;
-            background-color: black;
-            width: 666px;
-            height: 740px;
-            font-size: 16px; /* the text size decides the height of each row of tiles */
-        }
-
-            .game button {
-                font-size: 13.3px; /* button text size, same reason */
-                padding: 0; /* the default 6px side padding made the thin wall slots wider than set, so rows got too wide and wrapped on small screens */
+            #tilea br, #tileb br {
+                display: none;
             }
+
+            #tilea .texta, #tileb .textb {
+                display: block;
+                width: fit-content !important; /* only as wide as the name (auth.js makes it width:auto, which would fill the whole row) */
+                margin: 0 0 8px 0;
+            }
+
+            #tilea button, #tileb button {
+                display: inline-block;
+                width: 78px !important;
+                height: 12px !important;
+                margin: 0 10px 0 0;
+            }
+
+        /* ============ THE BOARD ============
+           One square grid of 17 x 17 cells: 9 squares (--t = 72px) and 8 gaps for walls (--g = 19px) in each direction
+           = 800 x 800px. Every square, wall slot and wall is exactly one cell, so nothing depends on text size, line height
+           or spaces. fitScreen() (bottom of this file) picks --t and --g so that, after the page zoom, they are a whole
+           number of screen pixels and the edges stay sharp. */
+        .game {
+            width: calc(9 * var(--t) + 8 * var(--g));
+            height: calc(9 * var(--t) + 8 * var(--g));
+            background: #000;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, var(--t) var(--g)) var(--t);
+            grid-template-rows: repeat(8, var(--t) var(--g)) var(--t);
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+            /* every cell fills its grid cell exactly (the old inline sizes in the engine's strings are ignored) */
+            .board button {
+                box-sizing: border-box;
+                display: block;
+                width: 100% !important;
+                height: 100% !important;
+                margin: 0;
+                padding: 0;
+                border: 0;
+                border-radius: 0;
+                font-size: 0;
+            }
+
+            /* an empty square */
+            .board .player-tiles {
+                background-color: #8b5e3c;
+                border: 6px solid #6b4226;
+            }
+
+            /* empty wall slots and the corner squares between them are plain black; a slot lights up when the mouse is over it */
+            .board .wall-tilesa, .board .wall-tilesb, .board .wall-tilesn {
+                background-color: #000;
+            }
+
+                .board .wall-tilesa:hover, .board .wall-tilesb:hover {
+                    background-color: #6b4226;
+                }
 
         .tilea {
             display: none;
@@ -425,7 +516,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            z-index: 9990;            /* above the game, below the login / popup boxes */
+            z-index: 9990; /* above the game, below the login / popup boxes */
             background: #0b3d1e;
             color: #fff;
             font: 20px Verdana, sans-serif;
@@ -488,22 +579,6 @@
         .playerb {
             background-image: url(playerb-pawn.jpg);
             background-size: cover;
-        }
-
-        .player-tiles {
-            background-color: #8b5e3c;
-            border: solid #6b4226;
-            border-width: 6px 6px; 
-        }
-
-        .wall-tilesa {
-            background-color: black;
-            border: none;
-        }
-
-        .wall-tilesb {
-            background-color: black;
-            border: none;
         }
     </style>
     <meta charset="utf-8" />
@@ -616,15 +691,21 @@
         Turn your phone sideways to play
     </div>
     <script>
-        // Zoom the whole page out when the screen is smaller than the size the game was drawn for (1680 x 1070), so it all fits.
+        // Zoom the whole page out when the screen is smaller than the size the game was drawn for (1680 x 1000), so it all fits.
         // It never zooms in past 100%.
         function fitScreen() {
             // On a phone innerWidth grows to fit the wide page, so use the real screen size from visualViewport when there is one.
             var vv = window.visualViewport;
             var w = vv ? vv.width * vv.scale : window.innerWidth;
             var h = vv ? vv.height * vv.scale : window.innerHeight;
-            var z = Math.min(1, w / 1680, h / 1070);
+            var z = Math.min(1, w / 1680, h / 1000);
             document.documentElement.style.zoom = z;
+            // The board: pick the square size (--t) and gap size (--g) so that on the real screen they are WHOLE pixels
+            // (a 72px square at zoom 0.857 would be 61.7px and the edges would look jagged).
+            var k = z * (window.devicePixelRatio || 1);          // css px -> screen pixels
+            var t = Math.max(1, Math.round(72 * k)), g = Math.max(1, Math.round(19 * k));
+            document.documentElement.style.setProperty("--t", (t / k) + "px");
+            document.documentElement.style.setProperty("--g", (g / k) + "px");
         }
         window.addEventListener("resize", fitScreen);
         if (window.visualViewport) window.visualViewport.addEventListener("resize", fitScreen);
